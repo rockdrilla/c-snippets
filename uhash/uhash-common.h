@@ -17,8 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "popcnt.h"
-
 #ifdef UHASH_IDX_T
   #undef UHASH_IDX_T
 #endif
@@ -35,7 +33,7 @@ typedef UHASH_IDX_T uhash_idx_t;
 
 #define ULIST_IDX_T  UHASH_IDX_T
 
-#include "ulist.h"
+#include "../ulist/ulist.h"
 
 #define UHASH_TYPE(type, kind) uhash_ ## kind ## __ ## type
 #define UHASH_PROC(type, proc) type ## __ ## proc
@@ -73,7 +71,7 @@ static const int _uhash_avl_right = 1;
 static inline uhash_idx_t _uhash_idx_int(uhash_idx_t idx) { return (idx - 1); }
 static inline uhash_idx_t _uhash_idx_pub(uhash_idx_t idx) { return (idx + 1); }
 
-#define _UHASH_IDX_T__WIDTH          (_POPCNT_MACRO(((ULIST_IDX_T) ~0)))
+#define _UHASH_IDX_T__WIDTH          (sizeof(UHASH_IDX_T) * CHAR_BIT)
 #define _UHASH_IDX_T__SELECTOR_BITS  2
 #define _UHASH_IDX_T__TRUINDEX_BITS  (_UHASH_IDX_T__WIDTH - _UHASH_IDX_T__SELECTOR_BITS)
 

@@ -1,10 +1,14 @@
-/* ulist: simple grow-only dynamic array
+/* popcnt: simple wrapper
+ *
+ * if "popcnt" is supported by CPU (in runtime) - it's called
  *
  * refs:
- * - https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
- * - https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html
- * - https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+ * - [1] https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+ * - [2] https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+ * - [3] https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html
  *
+ * Nota bene: code snippets from [1] are in public domain.
+ * 
  * SPDX-License-Identifier: Apache-2.0
  * (c) 2022, Konstantin Demin
  */
@@ -15,52 +19,117 @@
 #include <limits.h>
 #include <stdlib.h>
 
-/* ref:
- * - https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
- */
-#define _POPCNT_R0(v)     ((v) - (((v) >> 1) & 0x55555555u))
-#define _POPCNT_R1(v)     ((_POPCNT_R0(v) & 0x33333333u) + ((_POPCNT_R0(v) >> 2) & 0x33333333u))
-#define _POPCNT_R2(v)     (((_POPCNT_R1(v) + ((_POPCNT_R1(v) >> 4) & 0xF0F0F0Fu)) * 0x1010101u) >> 24)
-#define _POPCNT_MACRO(v)  _POPCNT_R2(v)
+static int popcnt(unsigned int x);
+static int popcntl(unsigned long x);
+static int popcntll(unsigned long long x);
 
-static inline int _popcnt_bithacks(size_t n)
-{
-	/* ref:
-	 * - https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
-	 */
+#define _POPCNT_FNAME_BITHACKS(n) _popcnt_bithacks__ ## n
+#define _POPCNT_DECLARE_BITHACKS(n, t) static inline int _POPCNT_FNAME_BITHACKS(n) (t x)
 
-	static const size_t b0 = ULONG_MAX / 3;
-	static const size_t b1 = ULONG_MAX / 15 * 3;
-	static const size_t b2 = ULONG_MAX / 255 * 15;
-	static const size_t b3 = ULONG_MAX / 255;
+_POPCNT_DECLARE_BITHACKS(ui, unsigned int);
+_POPCNT_DECLARE_BITHACKS(ul, unsigned long);
+_POPCNT_DECLARE_BITHACKS(ull, unsigned long long);
 
-	n = n - ((n >> 1) & b0);
-	n = (n & b1) + ((n >> 2) & b1);
-	n = (n + (n >> 4)) & b2;
-	n = (n * b3) >> (sizeof(size_t) - 1) * CHAR_BIT;
-
-	return n;
-}
-
-#if __INTPTR_WIDTH__ == 64
-  #define _ULIST_BUILTIN_POPCNT(n)  __builtin_popcountll(n)
-#else
-  #define _ULIST_BUILTIN_POPCNT(n)  __builtin_popcountl(n)
+#if __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports)
+  #define _POPCNT_HAVE_BUILTIN
 #endif
 
-static int _popcnt(size_t n)
+#undef _POPCNT_USE_BUILTIN
+#ifndef POPCNT_NO_BUILTIN
+  #ifdef _POPCNT_HAVE_BUILTIN
+    #define _POPCNT_USE_BUILTIN
+  #endif /* _POPCNT_HAVE_BUILTIN */
+#endif /* ! POPCNT_NO_BUILTIN */
+
+#ifdef _POPCNT_USE_BUILTIN
+
+#define _POPCNT_BUILTIN_NONE  0
+#define _POPCNT_BUILTIN_OK    1
+#define _POPCNT_BUILTIN_NACK  2
+
+static int _popcnt_builtin = _POPCNT_BUILTIN_NONE;
+
+static inline int _popcnt_cpu_supports(void)
 {
 	/* ref:
 	 * - https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 	 * - https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html
 	 */
-#if __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports)
 	__builtin_cpu_init();
-	if (__builtin_cpu_supports("popcnt") > 0)
-		return _ULIST_BUILTIN_POPCNT(n);
-#endif
-
-	return _popcnt_bithacks(n);
+	return (__builtin_cpu_supports("popcnt")) ? _POPCNT_BUILTIN_OK : _POPCNT_BUILTIN_NACK;
 }
+
+#define _POPCNT_TRY_BUILTIN(f) \
+	{ while (1) { \
+		if (_popcnt_builtin == _POPCNT_BUILTIN_OK) \
+			return f(x); \
+		if (_popcnt_builtin == _POPCNT_BUILTIN_NACK) \
+			break; \
+		_popcnt_builtin = _popcnt_cpu_supports(); \
+	} }
+
+#else /* ! _POPCNT_USE_BUILTIN */
+
+#define _POPCNT_TRY_BUILTIN(f)
+
+#endif /* _POPCNT_USE_BUILTIN */
+
+static int popcnt(unsigned int x)
+{
+	_POPCNT_TRY_BUILTIN(__builtin_popcount);
+	return _popcnt_bithacks__ui(x);
+}
+
+static int popcntl(unsigned long x)
+{
+	_POPCNT_TRY_BUILTIN(__builtin_popcountl);
+	return _popcnt_bithacks__ul(x);
+}
+
+static int popcntll(unsigned long long x)
+{
+	_POPCNT_TRY_BUILTIN(__builtin_popcountll);
+	return _popcnt_bithacks__ull(x);
+}
+
+/* ref:
+ * - https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+ */
+
+#define _POPCNT_T_m(t)   ((t) ~0)
+#define _POPCNT_T_c0(t)  (_POPCNT_T_m(t) / (t) 3)
+#define _POPCNT_T_c1(t)  (_POPCNT_T_m(t) / (t) 15 * (t) 3)
+#define _POPCNT_T_c2(t)  (_POPCNT_T_m(t) / (t) 255 * (t) 15)
+#define _POPCNT_T_c3(t)  (_POPCNT_T_m(t) / (t) 255)
+#define _POPCNT_T_c4(t)  ((sizeof(t) - 1) * CHAR_BIT)
+
+#define _POPCNT_T_R0(v,t)  ((t) (v) - (((t) (v) >> 1) & _POPCNT_T_c0(t)))
+#define _POPCNT_T_R1(v,t)  ((_POPCNT_T_R0(v,t) & _POPCNT_T_c1(t)) + ((_POPCNT_T_R0(v,t) >> 2) & _POPCNT_T_c1(t)))
+#define _POPCNT_T_R2(v,t)  ((_POPCNT_T_R1(v,t) + (_POPCNT_T_R1(v,t) >> 4)) & _POPCNT_T_c2(t))
+#define _POPCNT_T_R3(v,t)  ((_POPCNT_T_R2(v,t) * _POPCNT_T_c3(t)) >> _POPCNT_T_c4(t))
+
+#define POPCNT_MACRO(v, t)  _POPCNT_T_R3(v, t)
+
+#define POPCNT_MACRO32(v)   POPCNT_MACRO(v, unsigned int)
+#define POPCNT_MACRO64(v)   POPCNT_MACRO(v, unsigned long long)
+
+#define _POPCNT_DEFINE_BITHACKS(n, t) \
+	_POPCNT_DECLARE_BITHACKS(n, t) \
+	{ \
+		static const t c0 = _POPCNT_T_c0(t); \
+		static const t c1 = _POPCNT_T_c1(t); \
+		static const t c2 = _POPCNT_T_c2(t); \
+		static const t c3 = _POPCNT_T_c3(t); \
+		static const t c4 = _POPCNT_T_c4(t); \
+		x = x - ((x >> 1) & c0); \
+		x = (x & c1) + ((x >> 2) & c1); \
+		x = (x + (x >> 4)) & c2; \
+		x = (x * c3) >> c4; \
+		return x; \
+	}
+
+_POPCNT_DEFINE_BITHACKS(ui, unsigned int)
+_POPCNT_DEFINE_BITHACKS(ul, unsigned long)
+_POPCNT_DEFINE_BITHACKS(ull, unsigned long long)
 
 #endif /* POPCNT_H */
