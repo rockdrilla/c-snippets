@@ -1,6 +1,18 @@
 /* popcnt: simple wrapper
  *
- * if "popcnt" is supported by CPU (in runtime) - it's called
+ * - if using "builtins" is desired (POPCNT_NO_BUILTIN is not defined):
+ *   - if compiler can't optimize current call in build time:
+ *     - if "popcnt" instruction is supported by CPU in runtime [determined only once]:
+ * 		 - then instruction is to be "called".
+ *     - if "popcnt" instruction isn't supported by CPU in runtime:
+ *       - "bithacks" function is called (inspired by [1]).
+ *   - if compiler can optimize current call in build time:
+ *     - nothing is called (you're getting intermediate value somewhere).
+ * - if using "builtins" isn't desired (POPCNT_NO_BUILTIN is defined):
+ *   - "bithacks" function is called (inspired by [1]).
+ *
+ * Nota bene: consider NOT using POPCNT_NO_BUILTIN because compiler does greater work
+ * than you're expecting (sometimes).
  *
  * refs:
  * - [1] https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
