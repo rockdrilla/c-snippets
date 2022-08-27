@@ -14,106 +14,51 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../misc/popcnt.h"
+#include "../misc/memfun.h"
 
 #ifndef ULIST_IDX_T
   #define ULIST_IDX_T  uint32_t
 #endif
 typedef ULIST_IDX_T ulist_idx_t;
 
-#ifdef _ULIST_MEMBLOCK_DEFAULT
-  #undef _ULIST_MEMBLOCK_DEFAULT
-#endif
-#define _ULIST_MEMBLOCK_DEFAULT  65536
-#ifndef ULIST_MEMBLOCK
-  #define ULIST_MEMBLOCK  _ULIST_MEMBLOCK_DEFAULT
-#endif
-
-#ifdef _ULIST_GROWTH_FACTOR_DEFAULT
-  #undef _ULIST_GROWTH_FACTOR_DEFAULT
-#endif
-#define _ULIST_GROWTH_FACTOR_DEFAULT  8
-#ifndef ULIST_GROWTH_FACTOR
-  #define ULIST_GROWTH_FACTOR  _ULIST_GROWTH_FACTOR_DEFAULT
-#endif
-
 typedef struct {
 	void         * ptr;
 	uint           item, growth;
 	ulist_idx_t    used, allocated;
 } ulist_t;
+static const size_t __ulist_size_debug = sizeof(ulist_t);
 
 typedef void (*ulist_item_visitor) (const void * value, ulist_idx_t index);
 
-static const size_t ulist_memblock
-	= (POPCNT_MACRO32(ULIST_MEMBLOCK) == 1)
-	? (ULIST_MEMBLOCK)
-	: _ULIST_MEMBLOCK_DEFAULT;
-
-static const uint8_t ulist_growth_factor
-	= (((ULIST_GROWTH_FACTOR) > 1) && ((ULIST_GROWTH_FACTOR) < (__INTPTR_WIDTH__ / 2)))
-	? (ULIST_GROWTH_FACTOR)
-	: _ULIST_GROWTH_FACTOR_DEFAULT;
-
-static size_t _ulist_align_alloc(size_t length, size_t align)
+static inline size_t _ulist_item_mul(const ulist_t * list, size_t value)
 {
-	if (align == 0)
-		return 0;
-	if (popcntl(align) == 1) {
-		size_t mask = align - 1;
-		return (length & ~mask) + (((length & mask) != 0) ? align : 0);
-	}
-	size_t rem = length % align;
-	return length + ((rem != 0) ? (align - rem) : 0);
-}
-
-static ulist_idx_t _ulist_calc_growth(size_t item_size)
-{
-	static const size_t watermark = ulist_memblock >> ulist_growth_factor;
-	if (item_size > watermark)
-		return _ulist_align_alloc(item_size << ulist_growth_factor, ulist_memblock);
-	return ulist_memblock;
-}
-
-static void _ulist_free(void * ptr, size_t len)
-{
-	if (ptr == NULL)
-		return;
-	if (len != 0)
-		memset(ptr, 0, len);
-	free(ptr);
+	return (size_t) list->item * value;
 }
 
 static inline void * _ulist_item_ptr(const ulist_t * list, ulist_idx_t index)
 {
-	return (void *)((size_t) list->ptr + list->item * index);
+	return (void *)((size_t) list->ptr + _ulist_item_mul(list, index));
 }
 
 static void _ulist_grow_by_size(ulist_t * list, size_t length)
 {
-	if (length == 0)
-		return;
+	if (!length) return;
 
-	size_t old_alloc = (size_t) list->item * (size_t) list->allocated;
-	size_t new_alloc = _ulist_align_alloc(old_alloc + length, ulist_memblock);
-	old_alloc = _ulist_align_alloc(old_alloc, ulist_memblock);
-	if (new_alloc <= old_alloc)
-		return;
+	size_t new_alloc = memfun_want_realloc(_ulist_item_mul(list, list->allocated), length);
+	if (!new_alloc) return;
 
 	void * new_ptr = realloc(list->ptr, new_alloc);
-	if (new_ptr == NULL)
-		return;
+	if (!new_ptr) return;
 
 	list->ptr = new_ptr;
 	list->allocated = new_alloc / (size_t) list->item;
-	memset(_ulist_item_ptr(list, list->used), 0, list->item * (list->allocated - list->used));
+	memset(_ulist_item_ptr(list, list->used), 0, _ulist_item_mul(list, list->allocated - list->used));
 }
 
 static inline void _ulist_grow_by_item_count(ulist_t * list, ulist_idx_t count)
 {
-	if (count == 0)
-		return;
-	_ulist_grow_by_size(list, list->item * count);
+	if (!count) return;
+	_ulist_grow_by_size(list, _ulist_item_mul(list, count));
 }
 
 static inline void _ulist_autogrow(ulist_t * list)
@@ -124,7 +69,7 @@ static inline void _ulist_autogrow(ulist_t * list)
 static void _ulist_set(ulist_t * list, ulist_idx_t index, void * item)
 {
 	void * dst = _ulist_item_ptr(list, index);
-	if (item != NULL)
+	if (item)
 		memcpy(dst, item, list->item);
 	else
 		memset(dst, 0, list->item);
@@ -134,14 +79,13 @@ static void ulist_init(ulist_t * list, ulist_idx_t item_size)
 {
 	memset(list, 0, sizeof(ulist_t));
 	list->item = item_size;
-	if (item_size == 0)
-		return;
-	list->growth = _ulist_calc_growth(item_size);
+	if (!item_size) return;
+	list->growth = memfun_calc_growth(item_size);
 }
 
 static void ulist_free(ulist_t * list)
 {
-	_ulist_free(list->ptr, list->item * list->used);
+	memfun_free(list->ptr, _ulist_item_mul(list, list->used));
 	memset(list, 0, sizeof(ulist_t));
 }
 
