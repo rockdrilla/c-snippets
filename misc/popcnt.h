@@ -20,7 +20,7 @@
  * - [3] https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html
  *
  * Nota bene: code snippets from [1] are in public domain.
- * 
+ *
  * SPDX-License-Identifier: Apache-2.0
  * (c) 2022, Konstantin Demin
  */

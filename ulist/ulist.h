@@ -24,7 +24,7 @@ typedef ULIST_IDX_T ulist_idx_t;
 typedef struct {
 	void         * ptr;
 	size_t         igrowth;
-	uint           isize;
+	uint           isize, ialign;
 	ulist_idx_t    used, allocated;
 } ulist_t;
 static const size_t __ulist_size_debug = sizeof(ulist_t);
@@ -33,7 +33,7 @@ typedef void (*ulist_item_visitor) (const void * value, ulist_idx_t index);
 
 static inline size_t _ulist_item_mul(const ulist_t * list, size_t value)
 {
-	return (size_t) list->isize * value;
+	return (size_t) list->ialign * value;
 }
 
 static inline void * _ulist_item_ptr(const ulist_t * list, ulist_idx_t index)
@@ -52,7 +52,7 @@ static void _ulist_grow_by_size(ulist_t * list, size_t length)
 	if (!new_ptr) return;
 
 	list->ptr = new_ptr;
-	list->allocated = new_alloc / (size_t) list->isize;
+	list->allocated = new_alloc / (size_t) list->ialign;
 	memset(_ulist_item_ptr(list, list->used), 0, _ulist_item_mul(list, list->allocated - list->used));
 }
 
@@ -79,9 +79,9 @@ static void _ulist_set(ulist_t * list, ulist_idx_t index, void * item)
 static void ulist_init(ulist_t * list, ulist_idx_t item_size)
 {
 	memset(list, 0, sizeof(ulist_t));
-	list->isize = item_size;
 	if (!item_size) return;
-	list->igrowth = memfun_calc_growth(item_size);
+	list->ialign = memfun_simple_align(list->isize = item_size);
+	list->igrowth = memfun_calc_growth(list->ialign);
 }
 
 static void ulist_free(ulist_t * list)

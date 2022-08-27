@@ -1,5 +1,8 @@
 /* memfun: memory management fun
- * 
+ *
+ * refs:
+ * - [1] https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+ *
  * SPDX-License-Identifier: Apache-2.0
  * (c) 2022, Konstantin Demin
  */
@@ -69,8 +72,7 @@ static unsigned int memfun_growth_factor(void)
 
 static size_t memfun_align(size_t length, size_t align)
 {
-	if (align == 0)
-		return length;
+	if (!align) return length;
 
 	if (popcntl(align) == 1) {
 		size_t mask = align - 1;
@@ -79,6 +81,24 @@ static size_t memfun_align(size_t length, size_t align)
 
 	size_t rem = length % align;
 	return length + ((rem != 0) ? (align - rem) : 0);
+}
+
+static size_t memfun_simple_align(size_t length)
+{
+	if (!length) return 0;
+
+	if (popcntl(length) == 1) return length;
+
+	static const size_t xword_align = (__INTPTR_WIDTH__ == 64) ? 16 : 4;
+
+	if (length > xword_align)
+		return memfun_align(length, xword_align);
+
+#if __has_builtin(__builtin_clzl)
+	return 1 << (__INTPTR_WIDTH__ + 1 - __builtin_clzl(length));
+#else
+	return (length<<1) & ~(length ^ (length>>1)) & ~(length ^ (length>>2)) & ~(length ^ (length>>3) & ~(length ^ (length>>4));
+#endif
 }
 
 static size_t memfun_calc_growth(size_t item_size)
