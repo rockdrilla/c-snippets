@@ -51,8 +51,7 @@
 	static const value_t * \
 	UHASH_P(user_t, value) (const user_t * hash, uhash_idx_t node_index) { \
 		const UHASH_T(user_t, node) * node = UHASH_C(user_t, cnode, hash, node_index); \
-		if (node == NULL) \
-			return NULL; \
+		if (!node) return NULL; \
 		return UHASH_C(user_t, _value, hash, node); \
 	} \
 	\
@@ -62,24 +61,23 @@
 		void * v ; \
 		switch (node->value) { \
 		case 0: \
-			if (value == NULL) \
-				break; \
+			if (!value) break; \
 			i = ulist_append(&(hash->values), value); \
 			v = ulist_get(&(hash->values), i); \
-			if (hash->value_constructor != NULL) \
+			if (hash->value_constructor) \
 				hash->value_constructor(v); \
 			node->value = _uhash_idx_pub(i); \
 			break; \
 		default: \
 			i = _uhash_idx_int(node->value); \
 			v = ulist_get(&(hash->values), i); \
-			if (hash->value_destructor != NULL) \
+			if (hash->value_destructor) \
 				hash->value_destructor(v); \
 			ulist_set(&(hash->values), i, value); \
-			if (value == NULL) \
+			if (!value) \
 				node->value = 0; \
 			else \
-			if (hash->value_constructor != NULL) \
+			if (hash->value_constructor) \
 				hash->value_constructor(v); \
 		} \
 	} \
@@ -87,8 +85,7 @@
 	static void \
 	UHASH_P(user_t, set_value) (user_t * hash, uhash_idx_t node_index, value_t * value) { \
 		UHASH_T(user_t, node) * node = UHASH_C(user_t, node, hash, node_index); \
-		if (node == NULL) \
-			return; \
+		if (!node) return; \
 		UHASH_C(user_t, _set_value, hash, node, value); \
 	}
 
@@ -123,7 +120,7 @@
 
 #define _UHASH_PROCIMPL_FREE__TYPE2(user_t) \
 	{ \
-	if (hash->value_destructor != NULL) \
+	if (hash->value_destructor) \
 		for (uint32_t i = 0; i < hash->values.used; i++) \
 			hash->value_destructor(ulist_get(&hash->values, i)); \
 	ulist_free(&hash->values); \

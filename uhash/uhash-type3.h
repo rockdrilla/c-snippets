@@ -48,14 +48,13 @@
 	\
 	static inline const key_t * \
 	UHASH_P(user_t, _key) (const user_t * hash, const UHASH_T(user_t, node) * node) { \
-		return (node->key == 0) ? NULL : UHASH_C(user_t, _raw_key, hash, node->key); \
+		return (node->key) ? UHASH_C(user_t, _raw_key, hash, node->key) : NULL; \
 	} \
 	\
 	static const key_t * \
 	UHASH_P(user_t, key) (const user_t * hash, uhash_idx_t node_index) { \
 		const UHASH_T(user_t, node) * node = UHASH_C(user_t, cnode, hash, node_index); \
-		if (node == NULL) \
-			return NULL; \
+		if (!node) return NULL; \
 		return UHASH_C(user_t, _key, hash, node); \
 	} \
 	\
@@ -64,15 +63,14 @@
 		uhash_idx_t i; \
 		switch (node->key) { \
 		case 0: \
-			if (key == NULL) \
-				break; \
+			if (!key) break; \
 			i = ulist_append(&(hash->keys), key); \
 			node->key = _uhash_idx_pub(i); \
 			break; \
 		default: \
 			i = _uhash_idx_int(node->key); \
 			ulist_set(&(hash->keys), i, key); \
-			if (key == NULL) \
+			if (!key) \
 				node->key = 0; \
 		} \
 	} \
@@ -80,8 +78,7 @@
 	static void \
 	UHASH_P(user_t, set_key) (user_t * hash, uhash_idx_t node_index, key_t * key) { \
 		UHASH_T(user_t, node) * node = UHASH_C(user_t, node, hash, node_index); \
-		if (node == NULL) \
-			return; \
+		if (!node) return; \
 		UHASH_C(user_t, _set_key, hash, node, key); \
 	}
 

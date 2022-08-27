@@ -43,8 +43,7 @@
 	static const value_t * \
 	UHASH_P(user_t, value) (const user_t * hash, uhash_idx_t node_index) { \
 		const UHASH_T(user_t, node) * node = UHASH_C(user_t, cnode, hash, node_index); \
-		if (node == NULL) \
-			return NULL; \
+		if (!node) return NULL; \
 		return &(node->value); \
 	} \
 	\
@@ -56,8 +55,7 @@
 	static void \
 	UHASH_P(user_t, set_value) (user_t * hash, uhash_idx_t node_index, value_t value) { \
 		UHASH_T(user_t, node) * node = UHASH_C(user_t, node, hash, node_index); \
-		if (node == NULL) \
-			return; \
+		if (!node) return; \
 		UHASH_C(user_t, _set_value, hash, node, value); \
 	}
 
