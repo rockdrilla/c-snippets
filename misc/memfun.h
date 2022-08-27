@@ -24,7 +24,6 @@
 static size_t memfun_page_size(void)
 {
 	static size_t x = 0;
-
 	if (x) return x;
 
 #ifdef _SC_PAGESIZE
@@ -39,7 +38,6 @@ static size_t memfun_page_size(void)
 static size_t memfun_block_size(void)
 {
 	static size_t x = 0;
-
 	if (x) return x;
 
 #ifdef MEMFUN_BLOCK
@@ -57,7 +55,6 @@ static size_t memfun_block_size(void)
 static unsigned int memfun_growth_factor(void)
 {
 	static unsigned int x = 0;
-
 	if (x) return x;
 
 #ifdef MEMFUN_GROWTH_FACTOR
@@ -87,7 +84,8 @@ static size_t memfun_simple_align(size_t length)
 {
 	if (!length) return 0;
 
-	if (popcntl(length) == 1) return length;
+	if (popcntl(length) == 1)
+		return length;
 
 	static const size_t xword_align = (__INTPTR_WIDTH__ == 64) ? 16 : 4;
 
@@ -97,17 +95,17 @@ static size_t memfun_simple_align(size_t length)
 #if __has_builtin(__builtin_clzl)
 	return 1 << (__INTPTR_WIDTH__ + 1 - __builtin_clzl(length));
 #else
-	return (length<<1) & ~(length ^ (length>>1)) & ~(length ^ (length>>2)) & ~(length ^ (length>>3) & ~(length ^ (length>>4));
+	return (length<<1) & ~(length | (length>>1) | (length>>2) | (length>>3) | (length>>4));
 #endif
 }
 
 static size_t memfun_calc_growth(size_t item_size)
 {
-	static size_t watermark = 0;
+	// waterfall
+	static size_t x = 0;
+	if (!x) x = memfun_block_size() >> memfun_growth_factor();
 
-	if (!watermark) watermark = memfun_block_size() >> memfun_growth_factor();
-
-	if (item_size > watermark)
+	if (item_size > x)
 		return memfun_align(item_size << memfun_growth_factor(), memfun_block_size());
 
 	return memfun_block_size();
