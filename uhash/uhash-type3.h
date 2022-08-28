@@ -65,6 +65,7 @@
 		case 0: \
 			if (!key) break; \
 			i = ulist_append(&(hash->keys), key); \
+			if (i == ulist_invalid_idx_t) break; \
 			node->key = _uhash_idx_pub(i); \
 			break; \
 		default: \

@@ -323,6 +323,7 @@ static inline uhash_idx_t uhash_node_rela_index(uhash_idx_t selector, uhash_idx_
 			node_index_ptr = (uhash_idx_t *) UHASH_C(user_t, rela_index, hash, idx_rela); \
 			if (!(*node_index_ptr)) { \
 				uhash_idx_t i = ulist_append(&hash->nodes, NULL); \
+				if (i == ulist_invalid_idx_t) break; \
 				node = ulist_get(&hash->nodes, i); \
 				UHASH_C(user_t, _init_node, hash, node, key, value); \
 				node_index_ptr = (uhash_idx_t *) UHASH_C(user_t, rela_index, hash, idx_rela); \

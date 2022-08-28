@@ -15,8 +15,8 @@
 
 #include "popcnt.h"
 
-#define _MEMFUN_BLOCK_DEFAULT          65536
-#define _MEMFUN_GROWTH_FACTOR_DEFAULT  8
+#define _MEMFUN_BLOCK_DEFAULT          8192
+#define _MEMFUN_GROWTH_FACTOR_DEFAULT  10
 
 // #define MEMFUN_BLOCK          _MEMFUN_BLOCK_DEFAULT
 // #define MEMFUN_GROWTH_FACTOR  _MEMFUN_GROWTH_FACTOR_DEFAULT
@@ -52,22 +52,14 @@ static size_t memfun_block_size(void)
 	return x = (_default > page) ? _default : page;
 }
 
-static unsigned int memfun_growth_factor(void)
-{
-	static unsigned int x = 0;
-	if (x) return x;
-
 #ifdef MEMFUN_GROWTH_FACTOR
-	static const unsigned int _default = (((MEMFUN_GROWTH_FACTOR) > 1) && ((MEMFUN_GROWTH_FACTOR) < (__INTPTR_WIDTH__ / 2)))
-	                                   ? (MEMFUN_GROWTH_FACTOR) : _MEMFUN_GROWTH_FACTOR_DEFAULT;
+static const unsigned int memfun_growth_factor = (((MEMFUN_GROWTH_FACTOR) > 1) && ((MEMFUN_GROWTH_FACTOR) < (__INTPTR_WIDTH__ / 2)))
+	                                           ? (MEMFUN_GROWTH_FACTOR) : _MEMFUN_GROWTH_FACTOR_DEFAULT;
 #else
-	static const unsigned int _default = _MEMFUN_GROWTH_FACTOR_DEFAULT;
+static const unsigned int memfun_growth_factor = _MEMFUN_GROWTH_FACTOR_DEFAULT;
 #endif
 
-	return x = _default;
-}
-
-static size_t memfun_align(size_t length, size_t align)
+static size_t memfun_align_ex(size_t length, size_t align)
 {
 	if (!align) return length;
 
@@ -80,43 +72,63 @@ static size_t memfun_align(size_t length, size_t align)
 	return length + ((rem != 0) ? (align - rem) : 0);
 }
 
-static size_t memfun_simple_align(size_t length)
+static size_t _memfun_nd2(size_t x)
+{
+#if __has_builtin(__builtin_clzl)
+	return 1 << (__INTPTR_WIDTH__ + 1 - __builtin_clzl(x));
+#else
+	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3));
+#endif
+}
+
+static size_t memfun_align(size_t length)
 {
 	if (!length) return 0;
 
 	if (popcntl(length) == 1)
 		return length;
 
-	static const size_t xword_align = (__INTPTR_WIDTH__ == 64) ? 16 : 4;
+	if (length > sizeof(size_t))
+		return memfun_align_ex(length, sizeof(size_t));
 
-	if (length > xword_align)
-		return memfun_align(length, xword_align);
-
-#if __has_builtin(__builtin_clzl)
-	return 1 << (__INTPTR_WIDTH__ + 1 - __builtin_clzl(length));
-#else
-	return (length<<1) & ~(length | (length>>1) | (length>>2) | (length>>3) | (length>>4));
-#endif
+	return _memfun_nd2(length);
 }
 
 static size_t memfun_calc_growth(size_t item_size)
 {
 	// waterfall
 	static size_t x = 0;
-	if (!x) x = memfun_block_size() >> memfun_growth_factor();
+	if (!x) x = memfun_block_size() >> memfun_growth_factor;
 
 	if (item_size > x)
-		return memfun_align(item_size << memfun_growth_factor(), memfun_block_size());
+		return memfun_align_ex(item_size << memfun_growth_factor, memfun_block_size());
 
 	return memfun_block_size();
 }
 
-static size_t memfun_want_realloc(size_t length, size_t extend)
+static int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_length)
 {
+	if (new_length) *new_length = 0;
+
+	size_t b = length + extend;
+	if (b < length) return 0; // got overflow?..
+
+	if (new_length) *new_length = b;
+	return b > length;
+}
+
+static int memfun_want_realloc(size_t length, size_t extend, size_t * new_length)
+{
+	if (new_length) *new_length = 0;
+
 	size_t a, b;
-	a = memfun_align(length, memfun_block_size());
-	b = memfun_align(length + extend, memfun_block_size());
-	return (b > a) ? b : 0;
+	a = memfun_align_ex(length, memfun_block_size());
+	b = length + extend;
+	if (b < a) return 0; // got overflow?..
+
+	b = memfun_align_ex(b, memfun_block_size());
+	if (new_length) *new_length = b;
+	return b > a;
 }
 
 static void memfun_free(void * ptr, size_t len)

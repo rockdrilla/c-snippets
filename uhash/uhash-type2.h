@@ -63,6 +63,7 @@
 		case 0: \
 			if (!value) break; \
 			i = ulist_append(&(hash->values), value); \
+			if (i == ulist_invalid_idx_t) break; \
 			v = ulist_get(&(hash->values), i); \
 			if (hash->value_constructor) \
 				hash->value_constructor(v); \
