@@ -8,7 +8,7 @@
  */
 
 #ifndef ULIST_H
-#define ULIST_H
+#define ULIST_H 1
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -108,6 +108,12 @@ static void ulist_init(ulist_t * list, ulist_idx_t item_size)
 }
 
 static void ulist_free(ulist_t * list)
+{
+	free(list->ptr);
+	memset(list, 0, sizeof(ulist_t));
+}
+
+static void ulist_free_s(ulist_t * list)
 {
 	memfun_free(list->ptr, _ulist_item_mul(list, list->used));
 	memset(list, 0, sizeof(ulist_t));
