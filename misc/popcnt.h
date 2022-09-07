@@ -26,34 +26,40 @@
  */
 
 #ifndef POPCNT_H
-#define POPCNT_H
+#define POPCNT_H 1
 
 #include <limits.h>
 #include <stdlib.h>
+
+#include "kustom.h"
+
+#ifdef __has_builtin
+  #if __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports)
+    #ifndef _POPCNT_HAVE_BUILTIN
+      #define _POPCNT_HAVE_BUILTIN 1
+    #endif
+  #endif /* __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports) */
+#endif /* defined __has_builtin */
+#ifndef _POPCNT_HAVE_BUILTIN
+  #define _POPCNT_HAVE_BUILTIN 0
+#endif
+#ifndef POPCNT_NO_BUILTIN
+  #if _POPCNT_HAVE_BUILTIN
+    #define _POPCNT_USE_BUILTIN 1
+  #endif
+#endif /* ! POPCNT_NO_BUILTIN */
 
 static int popcnt(unsigned int x);
 static int popcntl(unsigned long x);
 static int popcntll(unsigned long long x);
 
-#define _POPCNT_FNAME_BITHACKS(n) _popcnt_bithacks__ ## n
-#define _POPCNT_DECLARE_BITHACKS(n, t) static inline int _POPCNT_FNAME_BITHACKS(n) (t x)
+#define _POPCNT_DECLARE_BITHACKS(n, t)  static inline int KUSTOM_PROC(popcnt_bithacks, n) (t x)
 
 _POPCNT_DECLARE_BITHACKS(ui, unsigned int);
 _POPCNT_DECLARE_BITHACKS(ul, unsigned long);
 _POPCNT_DECLARE_BITHACKS(ull, unsigned long long);
 
-#if __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports)
-  #define _POPCNT_HAVE_BUILTIN
-#endif
-
-#undef _POPCNT_USE_BUILTIN
-#ifndef POPCNT_NO_BUILTIN
-  #ifdef _POPCNT_HAVE_BUILTIN
-    #define _POPCNT_USE_BUILTIN
-  #endif /* _POPCNT_HAVE_BUILTIN */
-#endif /* ! POPCNT_NO_BUILTIN */
-
-#ifdef _POPCNT_USE_BUILTIN
+#if _POPCNT_USE_BUILTIN
 
 #define _POPCNT_BUILTIN_NONE  0
 #define _POPCNT_BUILTIN_OK    1
@@ -61,14 +67,16 @@ _POPCNT_DECLARE_BITHACKS(ull, unsigned long long);
 
 static int _popcnt_builtin = _POPCNT_BUILTIN_NONE;
 
-static inline int _popcnt_cpu_supports(void)
+static int _popcnt_cpu_supports(void)
 {
 	/* ref:
 	 * - https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
 	 * - https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html
 	 */
 	__builtin_cpu_init();
-	return (__builtin_cpu_supports("popcnt")) ? _POPCNT_BUILTIN_OK : _POPCNT_BUILTIN_NACK;
+	return (__builtin_cpu_supports("popcnt"))
+		? _POPCNT_BUILTIN_OK
+		: _POPCNT_BUILTIN_NACK;
 }
 
 #define _POPCNT_TRY_BUILTIN(f) \
@@ -82,26 +90,26 @@ static inline int _popcnt_cpu_supports(void)
 
 #else /* ! _POPCNT_USE_BUILTIN */
 
-#define _POPCNT_TRY_BUILTIN(f)
+#define _POPCNT_TRY_BUILTIN(f) {}
 
 #endif /* _POPCNT_USE_BUILTIN */
 
 static int popcnt(unsigned int x)
 {
-	_POPCNT_TRY_BUILTIN(__builtin_popcount);
-	return _popcnt_bithacks__ui(x);
+	_POPCNT_TRY_BUILTIN(__builtin_popcount)
+	return KUSTOM_CALL(popcnt_bithacks, ui, x);
 }
 
 static int popcntl(unsigned long x)
 {
-	_POPCNT_TRY_BUILTIN(__builtin_popcountl);
-	return _popcnt_bithacks__ul(x);
+	_POPCNT_TRY_BUILTIN(__builtin_popcountl)
+	return KUSTOM_CALL(popcnt_bithacks, ul, x);
 }
 
 static int popcntll(unsigned long long x)
 {
-	_POPCNT_TRY_BUILTIN(__builtin_popcountll);
-	return _popcnt_bithacks__ull(x);
+	_POPCNT_TRY_BUILTIN(__builtin_popcountll)
+	return KUSTOM_CALL(popcnt_bithacks, ull, x);
 }
 
 /* ref:
