@@ -11,7 +11,7 @@
  */
 
 #ifndef UHASH_H
-#define UHASH_H
+#define UHASH_H 1
 
 #include "uhash-common.h"
 #include "uhash-type0.h"
