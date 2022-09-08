@@ -8,18 +8,23 @@
  */
 
 #ifndef MEMFUN_H
-#define MEMFUN_H
+#define MEMFUN_H 1
 
 #include <string.h>
 #include <unistd.h>
 
 #include "popcnt.h"
 
+#define _MEMFUN_PAGE_DEFAULT           4096
 #define _MEMFUN_BLOCK_DEFAULT          8192
 #define _MEMFUN_GROWTH_FACTOR_DEFAULT  10
 
 // #define MEMFUN_BLOCK          _MEMFUN_BLOCK_DEFAULT
 // #define MEMFUN_GROWTH_FACTOR  _MEMFUN_GROWTH_FACTOR_DEFAULT
+
+#ifndef MEMFUN_FREE_PROC
+#define MEMFUN_FREE_PROC free
+#endif
 
 static size_t memfun_page_size(void)
 {
@@ -32,7 +37,7 @@ static size_t memfun_page_size(void)
 #endif
 
 	// good old standard
-	return x = 4096;
+	return x = _MEMFUN_PAGE_DEFAULT;
 }
 
 static size_t memfun_block_size(void)
@@ -41,10 +46,13 @@ static size_t memfun_block_size(void)
 	if (x) return x;
 
 #ifdef MEMFUN_BLOCK
-	static const size_t _default = (POPCNT_MACRO64(MEMFUN_BLOCK) == 1)
-	                             ? (MEMFUN_BLOCK) : _MEMFUN_BLOCK_DEFAULT;
+	static const size_t _default
+	= ((MEMFUN_BLOCK) < _MEMFUN_PAGE_DEFAULT)
+	? _MEMFUN_BLOCK_DEFAULT
+	: ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : _MEMFUN_BLOCK_DEFAULT);
 #else
-	static const size_t _default = _MEMFUN_BLOCK_DEFAULT;
+	static const size_t _default
+	= _MEMFUN_BLOCK_DEFAULT;
 #endif
 
 	size_t page = memfun_page_size();
@@ -55,9 +63,20 @@ static size_t memfun_block_size(void)
 #ifdef MEMFUN_GROWTH_FACTOR
 static const unsigned int memfun_growth_factor = (((MEMFUN_GROWTH_FACTOR) > 1) && ((MEMFUN_GROWTH_FACTOR) < (__INTPTR_WIDTH__ / 2)))
 	                                           ? (MEMFUN_GROWTH_FACTOR) : _MEMFUN_GROWTH_FACTOR_DEFAULT;
-#else
+#else /* ! MEMFUN_GROWTH_FACTOR */
 static const unsigned int memfun_growth_factor = _MEMFUN_GROWTH_FACTOR_DEFAULT;
-#endif
+#endif /* MEMFUN_GROWTH_FACTOR */
+
+#define MEMFUN_MACRO_ALIGN_EX(length, align) \
+	(((align) < 1) ? (length) : ( \
+		(POPCNT_MACRO32(align) == 1) \
+		? ( \
+			((length) & ~((align) - 1)) + ((((length) & ((align) - 1)) != 0) ? (align) : 0) \
+		  ) \
+		: ( \
+			(length) + ((((length) % (align)) != 0) ? ((align) - ((length) % (align))) : 0) \
+		  ) \
+	))
 
 static size_t memfun_align_ex(size_t length, size_t align)
 {
@@ -72,14 +91,22 @@ static size_t memfun_align_ex(size_t length, size_t align)
 	return length + ((rem != 0) ? (align - rem) : 0);
 }
 
-static size_t _memfun_nd2(size_t x)
+#define MEMFUN_MACRO_ND2_DUMB(x) \
+	(((x)<<1) & ~((x)|((x)>>1)|((x)>>2)|((x)>>3)|((x)>>4)))
+
+static size_t memfun_nd2_dumb(size_t x)
 {
-#if __has_builtin(__builtin_clzl)
-	return 1 << (__INTPTR_WIDTH__ + 1 - __builtin_clzl(x));
-#else
-	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3));
-#endif
+	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3)|(x>>4));
 }
+
+#define MEMFUN_MACRO_ALIGN(length) \
+	((length) < 1) ? 0 : ( \
+		(POPCNT_MACRO64(length) == 1) ? (length) : ( \
+			((length) > sizeof(size_t)) \
+			? MEMFUN_MACRO_ALIGN_EX(length, sizeof(size_t)) \
+			: MEMFUN_MACRO_ND2_DUMB(length) \
+		) \
+	)
 
 static size_t memfun_align(size_t length)
 {
@@ -91,7 +118,7 @@ static size_t memfun_align(size_t length)
 	if (length > sizeof(size_t))
 		return memfun_align_ex(length, sizeof(size_t));
 
-	return _memfun_nd2(length);
+	return memfun_nd2_dumb(length);
 }
 
 static size_t memfun_calc_growth(size_t item_size)
@@ -135,7 +162,7 @@ static void memfun_free(void * ptr, size_t len)
 {
 	if (!ptr) return;
 	if (len) memset(ptr, 0, len);
-	free(ptr);
+	MEMFUN_FREE_PROC(ptr);
 }
 
 #endif
