@@ -25,8 +25,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef POPCNT_H
-#define POPCNT_H 1
+#ifndef HEADER_INCLUDED_POPCNT
+#define HEADER_INCLUDED_POPCNT 1
 
 #include <limits.h>
 #include <stdlib.h>
@@ -152,4 +152,4 @@ _POPCNT_DEFINE_BITHACKS(ui, unsigned int)
 _POPCNT_DEFINE_BITHACKS(ul, unsigned long)
 _POPCNT_DEFINE_BITHACKS(ull, unsigned long long)
 
-#endif /* POPCNT_H */
+#endif /* HEADER_INCLUDED_POPCNT */

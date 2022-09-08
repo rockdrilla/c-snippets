@@ -7,8 +7,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef ULIST_H
-#define ULIST_H 1
+#ifndef HEADER_INCLUDED_ULIST
+#define HEADER_INCLUDED_ULIST 1
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -155,4 +155,4 @@ static void ulist_rwalk(const ulist_t * list, ulist_item_visitor visitor)
 	}
 }
 
-#endif /* ULIST_H */
+#endif /* HEADER_INCLUDED_ULIST */

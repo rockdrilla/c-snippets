@@ -10,8 +10,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef UHASH_TYPE2_H
-#define UHASH_TYPE2_H 1
+#ifndef HEADER_INCLUDED_UHASH_TYPE2
+#define HEADER_INCLUDED_UHASH_TYPE2 1
 
 #include "uhash-type1.h"
 
@@ -181,4 +181,4 @@
 	_UHASH_PROC_INSERT__TYPE2(user_t, key_t, value_t) \
 
 
-#endif /* UHASH_TYPE2_H */
+#endif /* HEADER_INCLUDED_UHASH_TYPE2 */

@@ -10,8 +10,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef UHASH_H
-#define UHASH_H 1
+#ifndef HEADER_INCLUDED_UHASH
+#define HEADER_INCLUDED_UHASH 1
 
 #include "uhash-common.h"
 #include "uhash-type0.h"
@@ -19,4 +19,4 @@
 #include "uhash-type2.h"
 #include "uhash-type3.h"
 
-#endif /* UHASH_H */
+#endif /* HEADER_INCLUDED_UHASH */

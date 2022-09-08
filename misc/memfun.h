@@ -7,8 +7,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef MEMFUN_H
-#define MEMFUN_H 1
+#ifndef HEADER_INCLUDED_MEMFUN
+#define HEADER_INCLUDED_MEMFUN 1
 
 #include <string.h>
 #include <unistd.h>
@@ -165,4 +165,4 @@ static void memfun_free(void * ptr, size_t len)
 	MEMFUN_FREE_PROC(ptr);
 }
 
-#endif
+#endif /* HEADER_INCLUDED_MEMFUN */

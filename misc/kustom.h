@@ -4,8 +4,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef KUSTOM_H
-#define KUSTOM_H 1
+#ifndef HEADER_INCLUDED_KUSTOM
+#define HEADER_INCLUDED_KUSTOM 1
 
 #define KUSTOM_NAME(prefix, type, kind)  prefix ## _ ## type ## _ ## kind
 
@@ -17,4 +17,4 @@
 #define KUSTOM_PROC_INT(type, proc)       type ## __int__ ## proc
 #define KUSTOM_CALL_INT(type, proc, ...)  KUSTOM_PROC_INT(type, proc) (__VA_ARGS__)
 
-#endif /* KUSTOM_H */
+#endif /* HEADER_INCLUDED_KUSTOM */

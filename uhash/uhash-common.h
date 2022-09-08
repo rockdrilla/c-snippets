@@ -10,8 +10,8 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef UHASH_COMMON_H
-#define UHASH_COMMON_H 1
+#ifndef HEADER_INCLUDED_UHASH_COMMON
+#define HEADER_INCLUDED_UHASH_COMMON 1
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -358,4 +358,4 @@ static inline uhash_idx_t uhash_node_rela_index(uhash_idx_t selector, uhash_idx_
 		} \
 	}
 
-#endif /* UHASH_COMMON_H */
+#endif /* HEADER_INCLUDED_UHASH_COMMON */
