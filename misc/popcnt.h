@@ -118,10 +118,10 @@ _POPCNT_DEFINE_FUNC(ll, unsigned long long)
 #define _POPCNT_T_R2(v,t)  ((_POPCNT_T_R1(v,t) + (_POPCNT_T_R1(v,t) >> 4)) & _POPCNT_T_c2(t))
 #define _POPCNT_T_R3(v,t)  ((_POPCNT_T_R2(v,t) * _POPCNT_T_c3(t)) >> _POPCNT_T_c4(t))
 
-#define POPCNT_MACRO(v, t)  _POPCNT_T_R3(v, t)
+#define _POPCNT_MACRO(v, t)  _POPCNT_T_R3(v, t)
 
-#define POPCNT_MACRO32(v)   POPCNT_MACRO(((v) & UINT_MAX),   unsigned int)
-#define POPCNT_MACRO64(v)   POPCNT_MACRO(((v) & ULLONG_MAX), unsigned long long)
+#define POPCNT_MACRO32(v)   _POPCNT_MACRO(((v) & UINT_MAX),   unsigned int)
+#define POPCNT_MACRO64(v)   _POPCNT_MACRO(((v) & ULLONG_MAX), unsigned long long)
 
 #define _POPCNT_DEFINE_BITHACKS(n, t) \
 	_POPCNT_DECLARE_BITHACKS(n, t) \
