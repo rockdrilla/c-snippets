@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "popcnt.h"
+#include "numfun.h"
 
 #define _MEMFUN_PAGE_DEFAULT           4096
 #define _MEMFUN_BLOCK_DEFAULT          8192
@@ -40,86 +40,75 @@ static size_t memfun_page_size(void)
 	return x = _MEMFUN_PAGE_DEFAULT;
 }
 
+#ifdef MEMFUN_BLOCK
+static const size_t memfun_block_default
+= ((MEMFUN_BLOCK) < _MEMFUN_PAGE_DEFAULT)
+? _MEMFUN_BLOCK_DEFAULT
+: ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : _MEMFUN_BLOCK_DEFAULT);
+#else
+static const size_t memfun_block_default 
+= _MEMFUN_BLOCK_DEFAULT;
+#endif
+
 static size_t memfun_block_size(void)
 {
 	static size_t x = 0;
 	if (x) return x;
 
-#ifdef MEMFUN_BLOCK
-	static const size_t _default
-	= ((MEMFUN_BLOCK) < _MEMFUN_PAGE_DEFAULT)
-	? _MEMFUN_BLOCK_DEFAULT
-	: ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : _MEMFUN_BLOCK_DEFAULT);
-#else
-	static const size_t _default
-	= _MEMFUN_BLOCK_DEFAULT;
-#endif
-
 	size_t page = memfun_page_size();
 
-	return x = (_default > page) ? _default : page;
+	return x = (memfun_block_default > page) ? memfun_block_default : page;
 }
 
 #ifdef MEMFUN_GROWTH_FACTOR
-static const unsigned int memfun_growth_factor = (((MEMFUN_GROWTH_FACTOR) > 1) && ((MEMFUN_GROWTH_FACTOR) < (__INTPTR_WIDTH__ / 2)))
-	                                           ? (MEMFUN_GROWTH_FACTOR) : _MEMFUN_GROWTH_FACTOR_DEFAULT;
+static const unsigned int memfun_growth_factor
+= (((MEMFUN_GROWTH_FACTOR) > 1) && ((MEMFUN_GROWTH_FACTOR) < (__INTPTR_WIDTH__ / 2)))
+? (MEMFUN_GROWTH_FACTOR)
+: _MEMFUN_GROWTH_FACTOR_DEFAULT;
 #else /* ! MEMFUN_GROWTH_FACTOR */
-static const unsigned int memfun_growth_factor = _MEMFUN_GROWTH_FACTOR_DEFAULT;
+static const unsigned int memfun_growth_factor
+= _MEMFUN_GROWTH_FACTOR_DEFAULT;
 #endif /* MEMFUN_GROWTH_FACTOR */
 
-#define MEMFUN_MACRO_ALIGN_EX(length, align) \
-	(((align) < 1) ? (length) : ( \
-		(POPCNT_MACRO32(align) == 1) \
-		? ( \
-			((length) & ~((align) - 1)) + ((((length) & ((align) - 1)) != 0) ? (align) : 0) \
-		  ) \
-		: ( \
-			(length) + ((((length) % (align)) != 0) ? ((align) - ((length) % (align))) : 0) \
-		  ) \
-	))
+// n2d = next 2' degree
 
-static size_t memfun_align_ex(size_t length, size_t align)
+#define _MEMFUN_N2D_DUMB(x) \
+	( ((x)<<1) & ~((x)|((x)>>1)|((x)>>2)|((x)>>3)|((x)>>4)|((x)>>5)) )
+
+static size_t _memfun_n2d_dumb(size_t x)
 {
-	if (!align) return length;
-
-	if (popcntl(align) == 1) {
-		size_t mask = align - 1;
-		return (length & ~mask) + (((length & mask) != 0) ? align : 0);
-	}
-
-	size_t rem = length % align;
-	return length + ((rem != 0) ? (align - rem) : 0);
-}
-
-#define MEMFUN_MACRO_ND2_DUMB(x) \
-	(((x)<<1) & ~((x)|((x)>>1)|((x)>>2)|((x)>>3)|((x)>>4)))
-
-static size_t memfun_nd2_dumb(size_t x)
-{
-	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3)|(x>>4));
+	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5));
 }
 
 #define MEMFUN_MACRO_ALIGN(length) \
-	((length) < 1) ? 0 : ( \
-		(POPCNT_MACRO64(length) == 1) ? (length) : ( \
-			((length) > sizeof(size_t)) \
-			? MEMFUN_MACRO_ALIGN_EX(length, sizeof(size_t)) \
-			: MEMFUN_MACRO_ND2_DUMB(length) \
-		) \
-	)
+	( (length) < 1) ? 0 : ( \
+		(POPCNT_MACRO64(length) == 1) \
+		? (length) \
+		: ( ((length) > sizeof(size_t)) \
+		    ? NUMFUN_MACRO_ROUND_BY(length, sizeof(size_t)) \
+		    : _MEMFUN_N2D_DUMB(length) \
+	) )
+// ^- using _MEMFUN_N2D_DUMB instead of NUMFUN_NEXT2DEGREE64 due to value "knowledge"
 
 static size_t memfun_align(size_t length)
 {
 	if (!length) return 0;
 
-	if (popcntl(length) == 1)
-		return length;
+	if (popcntl(length) == 1) return length;
 
 	if (length > sizeof(size_t))
-		return memfun_align_ex(length, sizeof(size_t));
+		return numfun_round_by(length, sizeof(size_t));
 
-	return memfun_nd2_dumb(length);
+	// using _memfun_n2d_dumb() instead of numfun_next2degreel() due to value "knowledge"
+//	return numfun_next2degreel(length);
+	return _memfun_n2d_dumb(length);
 }
+
+#define MEMFUN_MACRO_CALC_GROWTH(item_size) \
+	( ((item_size) > (memfun_block_default >> memfun_growth_factor)) \
+	? NUMFUN_MACRO_ROUND_BY((item_size) << memfun_growth_factor, memfun_block_default) \
+	: memfun_block_default \
+	)
 
 static size_t memfun_calc_growth(size_t item_size)
 {
@@ -128,7 +117,7 @@ static size_t memfun_calc_growth(size_t item_size)
 	if (!x) x = memfun_block_size() >> memfun_growth_factor;
 
 	if (item_size > x)
-		return memfun_align_ex(item_size << memfun_growth_factor, memfun_block_size());
+		return numfun_round_by(item_size << memfun_growth_factor, memfun_block_size());
 
 	return memfun_block_size();
 }
@@ -149,11 +138,11 @@ static int memfun_want_realloc(size_t length, size_t extend, size_t * new_length
 	if (new_length) *new_length = 0;
 
 	size_t a, b;
-	a = memfun_align_ex(length, memfun_block_size());
+	a = numfun_round_by(length, memfun_block_size());
 	b = length + extend;
 	if (b < a) return 0; // got overflow?..
 
-	b = memfun_align_ex(b, memfun_block_size());
+	b = numfun_round_by(b, memfun_block_size());
 	if (new_length) *new_length = b;
 	return b > a;
 }
