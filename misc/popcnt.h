@@ -31,8 +31,6 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#include "kustom.h"
-
 #ifdef __has_builtin
   #if __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports)
     #ifndef _POPCNT_HAVE_BUILTIN
@@ -53,11 +51,12 @@ static int popcnt(unsigned int x);
 static int popcntl(unsigned long x);
 static int popcntll(unsigned long long x);
 
-#define _POPCNT_DECLARE_BITHACKS(n, t)  static inline int KUSTOM_PROC(popcnt_bithacks, n) (t x)
+#define _POPCNT_BITHACKS(n)             popcnt_bithacks ## n
+#define _POPCNT_DECLARE_BITHACKS(n, t)  static inline int _POPCNT_BITHACKS(n) (t x)
 
-_POPCNT_DECLARE_BITHACKS(ui, unsigned int);
-_POPCNT_DECLARE_BITHACKS(ul, unsigned long);
-_POPCNT_DECLARE_BITHACKS(ull, unsigned long long);
+_POPCNT_DECLARE_BITHACKS(,   unsigned int);
+_POPCNT_DECLARE_BITHACKS(l,  unsigned long);
+_POPCNT_DECLARE_BITHACKS(ll, unsigned long long);
 
 #if _POPCNT_USE_BUILTIN
 
@@ -94,23 +93,14 @@ static int _popcnt_cpu_supports(void)
 
 #endif /* _POPCNT_USE_BUILTIN */
 
-static int popcnt(unsigned int x)
-{
-	_POPCNT_TRY_BUILTIN(__builtin_popcount)
-	return KUSTOM_CALL(popcnt_bithacks, ui, x);
-}
-
-static int popcntl(unsigned long x)
-{
-	_POPCNT_TRY_BUILTIN(__builtin_popcountl)
-	return KUSTOM_CALL(popcnt_bithacks, ul, x);
-}
-
-static int popcntll(unsigned long long x)
-{
-	_POPCNT_TRY_BUILTIN(__builtin_popcountll)
-	return KUSTOM_CALL(popcnt_bithacks, ull, x);
-}
+#define _POPCNT_DEFINE_FUNC(n, t) \
+	static int popcnt ## n (t x) { \
+		_POPCNT_TRY_BUILTIN(__builtin_popcount ## n) \
+		return _POPCNT_BITHACKS(n) (x); \
+	}
+_POPCNT_DEFINE_FUNC(,   unsigned int)
+_POPCNT_DEFINE_FUNC(l,  unsigned long)
+_POPCNT_DEFINE_FUNC(ll, unsigned long long)
 
 /* ref:
  * - https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
@@ -130,8 +120,8 @@ static int popcntll(unsigned long long x)
 
 #define POPCNT_MACRO(v, t)  _POPCNT_T_R3(v, t)
 
-#define POPCNT_MACRO32(v)   POPCNT_MACRO(v, unsigned int)
-#define POPCNT_MACRO64(v)   POPCNT_MACRO(v, unsigned long long)
+#define POPCNT_MACRO32(v)   POPCNT_MACRO(((v) & UINT_MAX),   unsigned int)
+#define POPCNT_MACRO64(v)   POPCNT_MACRO(((v) & ULLONG_MAX), unsigned long long)
 
 #define _POPCNT_DEFINE_BITHACKS(n, t) \
 	_POPCNT_DECLARE_BITHACKS(n, t) \
@@ -147,9 +137,8 @@ static int popcntll(unsigned long long x)
 		x = (x * c3) >> c4; \
 		return x; \
 	}
-
-_POPCNT_DEFINE_BITHACKS(ui, unsigned int)
-_POPCNT_DEFINE_BITHACKS(ul, unsigned long)
-_POPCNT_DEFINE_BITHACKS(ull, unsigned long long)
+_POPCNT_DEFINE_BITHACKS(,   unsigned int)
+_POPCNT_DEFINE_BITHACKS(l,  unsigned long)
+_POPCNT_DEFINE_BITHACKS(ll, unsigned long long)
 
 #endif /* HEADER_INCLUDED_POPCNT */
