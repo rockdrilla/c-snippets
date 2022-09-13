@@ -22,8 +22,16 @@
 // #define MEMFUN_BLOCK          _MEMFUN_BLOCK_DEFAULT
 // #define MEMFUN_GROWTH_FACTOR  _MEMFUN_GROWTH_FACTOR_DEFAULT
 
-#ifndef MEMFUN_FREE_PROC
-#define MEMFUN_FREE_PROC free
+#ifndef MEMFUN_MALLOC
+#define MEMFUN_MALLOC(size) malloc(size)
+#endif
+
+#ifndef MEMFUN_REALLOC
+#define MEMFUN_REALLOC(ptr, size) realloc(ptr, size)
+#endif
+
+#ifndef MEMFUN_FREE
+#define MEMFUN_FREE(ptr) free(ptr)
 #endif
 
 static size_t memfun_page_size(void)
@@ -151,7 +159,7 @@ static void memfun_free(void * ptr, size_t len)
 {
 	if (!ptr) return;
 	if (len) memset(ptr, 0, len);
-	MEMFUN_FREE_PROC(ptr);
+	MEMFUN_FREE(ptr);
 }
 
 #endif /* HEADER_INCLUDED_MEMFUN */
