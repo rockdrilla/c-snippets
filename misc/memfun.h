@@ -112,6 +112,13 @@ static size_t memfun_align(size_t length)
 	return _memfun_n2d_dumb(length);
 }
 
+static inline size_t memfun_block_align(size_t length)
+{
+	if (!length) return 0;
+
+	return numfun_round_by(length, memfun_block_size());;
+}
+
 #define MEMFUN_MACRO_CALC_GROWTH(item_size) \
 	( ((item_size) > (memfun_block_default >> memfun_growth_factor)) \
 	? NUMFUN_MACRO_ROUND_BY((item_size) << memfun_growth_factor, memfun_block_default) \
@@ -125,41 +132,92 @@ static size_t memfun_calc_growth(size_t item_size)
 	if (!x) x = memfun_block_size() >> memfun_growth_factor;
 
 	if (item_size > x)
-		return numfun_round_by(item_size << memfun_growth_factor, memfun_block_size());
+		return memfun_block_align(item_size << memfun_growth_factor);
 
 	return memfun_block_size();
 }
 
 static int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_length)
 {
-	if (new_length) *new_length = 0;
+	if (!extend) return 0;
 
-	size_t b = length + extend;
-	if (b < length) return 0; // got overflow?..
+	size_t result = 0;
+	if (!numfun_uaddl(length, extend, &result))
+		return 0;
 
-	if (new_length) *new_length = b;
-	return b > length;
+	if (new_length) *new_length = result;
+
+	return result > length;
 }
 
 static int memfun_want_realloc(size_t length, size_t extend, size_t * new_length)
 {
-	if (new_length) *new_length = 0;
+	if (!extend) return 0;
 
 	size_t a, b;
-	a = numfun_round_by(length, memfun_block_size());
-	b = length + extend;
-	if (b < a) return 0; // got overflow?..
+	a = memfun_block_align(length);
+	if (length > a) return 0;
 
-	b = numfun_round_by(b, memfun_block_size());
-	if (new_length) *new_length = b;
-	return b > a;
+	b = 0;
+	if (!memfun_want_realloc_raw(length, extend, &b))
+		return 0;
+
+	if (a >= b) return 0;
+
+	a = memfun_block_align(b);
+	if (b > a) return 0;
+
+	if (new_length) *new_length = a;
+	return 1;
 }
 
-static void memfun_free(void * ptr, size_t len)
+static void * memfun_alloc(size_t length)
+{
+	void * ptr = (MEMFUN_MALLOC(memfun_block_align(length)));
+	if (!ptr) return NULL;
+	if (length) memset(ptr, 0, length);
+	return ptr;
+}
+
+static void * _memfun_realloc(void * ptr, size_t _old, size_t _new)
+{
+	void * nptr = (MEMFUN_REALLOC(ptr, _new));
+	if (!nptr) return NULL;
+
+	memset(&(((char *) nptr)[_old]), 0, _new - _old);
+
+	return nptr;
+}
+
+static void * memfun_realloc(void * ptr, size_t old_length, size_t extend)
+{
+	size_t _old = memfun_block_align(old_length);
+	size_t _new = 0;
+	if (!memfun_want_realloc(_old, extend, &_new))
+		return ptr;
+
+	return _memfun_realloc(ptr, _old, _new);
+}
+
+static void * memfun_realloc_ex(void * ptr, size_t * length, size_t extend)
+{
+	if (!length) return ptr;
+
+	size_t _old = memfun_block_align(*length);
+	size_t _new = 0;
+	if (!memfun_want_realloc(_old, extend, &_new))
+		return ptr;
+
+	*length = _new;
+
+	return _memfun_realloc(ptr, _old, _new);
+}
+
+static void memfun_free(void * ptr, size_t length)
 {
 	if (!ptr) return;
-	if (len) memset(ptr, 0, len);
-	MEMFUN_FREE(ptr);
+	if (length) memset(ptr, 0, length);
+	(void) MEMFUN_FREE(ptr);
 }
 
 #endif /* HEADER_INCLUDED_MEMFUN */
