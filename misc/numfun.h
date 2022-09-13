@@ -70,19 +70,19 @@ _NUMFUN_DEFINE_SLB_FUNC(ll, unsigned long long)
 	}
 
 #if _NUMFUN_HAVE_BUILTIN_UADD
-#define numfun_uadd(a, b, r) __builtin_uadd_overflow(a, b, r)
+#define numfun_uadd(a, b, r) (!__builtin_uadd_overflow(a, b, r))
 #else /* ! _NUMFUN_HAVE_BUILTIN_UADD */
 _NUMFUN_DEFINE_UADD_FUNC(, unsigned int)
 #endif /* _NUMFUN_HAVE_BUILTIN_UADD */
 
 #if _NUMFUN_HAVE_BUILTIN_UADDL
-#define numfun_uaddl(a, b, r) __builtin_uaddl_overflow(a, b, r)
+#define numfun_uaddl(a, b, r) (!__builtin_uaddl_overflow(a, b, r))
 #else /* ! _NUMFUN_HAVE_BUILTIN_UADDL */
 _NUMFUN_DEFINE_UADD_FUNC(l, unsigned long)
 #endif /* _NUMFUN_HAVE_BUILTIN_UADDL */
 
 #if _NUMFUN_HAVE_BUILTIN_UADDLL
-#define numfun_uaddll(a, b, r) __builtin_uaddll_overflow(a, b, r)
+#define numfun_uaddll(a, b, r) (!__builtin_uaddll_overflow(a, b, r))
 #else /* ! _NUMFUN_HAVE_BUILTIN_UADDLL */
 _NUMFUN_DEFINE_UADD_FUNC(ll, unsigned long long)
 #endif /* _NUMFUN_HAVE_BUILTIN_UADDLL */
