@@ -10,6 +10,24 @@
 #include "dumb-recurse.h"
 #include "popcnt.h"
 
+#if defined __has_builtin
+  #if __has_builtin(__builtin_uadd_overflow)
+    #ifndef _NUMFUN_HAVE_BUILTIN_UADD
+    #define _NUMFUN_HAVE_BUILTIN_UADD 1
+    #endif
+  #endif /* __builtin_uadd_overflow */
+  #if __has_builtin(__builtin_uaddl_overflow)
+    #ifndef _NUMFUN_HAVE_BUILTIN_UADDL
+    #define _NUMFUN_HAVE_BUILTIN_UADDL 1
+    #endif
+  #endif /* __builtin_uaddl_overflow */
+  #if __has_builtin(__builtin_uaddll_overflow)
+    #ifndef _NUMFUN_HAVE_BUILTIN_UADDLL
+    #define _NUMFUN_HAVE_BUILTIN_UADDLL 1
+    #endif
+  #endif /* __builtin_uaddll_overflow */
+#endif /* __has_builtin */
+
 // SLB = set lower bits
 
 #define _NUMFUN_SLB_a(v)     ( (v) | ((v) - 1) | ((v) >> 1) )
@@ -38,13 +56,45 @@ _NUMFUN_DEFINE_SLB_FUNC(,   unsigned int)
 _NUMFUN_DEFINE_SLB_FUNC(l,  unsigned long)
 _NUMFUN_DEFINE_SLB_FUNC(ll, unsigned long long)
 
+// TODO: write fair enough version
+#define _NUMFUN_DEFINE_UADD_FUNC(n, t) \
+	static int numfun_uadd ## n (t a, t b, t * r) { \
+		t res = a + b; \
+		if (a > b) { \
+			if (res < a) return 0; \
+		} else { \
+			if (res < b) return 0; \
+		} \
+		if (r) *r = res; \
+		return 1; \
+	}
+
+#if _NUMFUN_HAVE_BUILTIN_UADD
+#define numfun_uadd(a, b, r) __builtin_uadd_overflow(a, b, r)
+#else /* ! _NUMFUN_HAVE_BUILTIN_UADD */
+_NUMFUN_DEFINE_UADD_FUNC(, unsigned int)
+#endif /* _NUMFUN_HAVE_BUILTIN_UADD */
+
+#if _NUMFUN_HAVE_BUILTIN_UADDL
+#define numfun_uaddl(a, b, r) __builtin_uaddl_overflow(a, b, r)
+#else /* ! _NUMFUN_HAVE_BUILTIN_UADDL */
+_NUMFUN_DEFINE_UADD_FUNC(l, unsigned long)
+#endif /* _NUMFUN_HAVE_BUILTIN_UADDL */
+
+#if _NUMFUN_HAVE_BUILTIN_UADDLL
+#define numfun_uaddll(a, b, r) __builtin_uaddll_overflow(a, b, r)
+#else /* ! _NUMFUN_HAVE_BUILTIN_UADDLL */
+_NUMFUN_DEFINE_UADD_FUNC(ll, unsigned long long)
+#endif /* _NUMFUN_HAVE_BUILTIN_UADDLL */
+
 #define NUMFUN_NEXT2DEGREE32(v)  ( 1 + NUMFUN_MACRO_SET_LOWER_BITS32(v) )
 #define NUMFUN_NEXT2DEGREE64(v)  ( 1 + NUMFUN_MACRO_SET_LOWER_BITS64(v) )
 
 #define _NUMFUN_DEFINE_N2D_FUNC(n, t) \
 	static t numfun_next2degree ## n (t v) { \
 		if (v == 0) return 1; \
-		return 1 + numfun_set_lower_bits ## n (v); \
+		t r, x = numfun_set_lower_bits ## n (v); \
+		return (numfun_uadd ## n (x, 1, &r)) ? r : (1 + (x >> 1)); \
 	}
 _NUMFUN_DEFINE_N2D_FUNC(,   unsigned int)
 _NUMFUN_DEFINE_N2D_FUNC(l,  unsigned long)
@@ -79,15 +129,13 @@ static size_t numfun_round_by(size_t value, size_t align)
 {
 	if (align < 2) return value;
 
-	if (popcntl(align) == 1) {
-		size_t mask = align - 1;
-		return (value & ~mask) + (((value & mask) != 0) ? align : 0);
-	}
+	size_t r, x;
 
-	size_t rem = value % align;
-	return value + ((rem != 0) ? (align - rem) : 0);
+	r = (popcntl(align) == 1) ? (value & (align - 1)) : (value % align);
+	if (!r) return value;
+
+	x = value - r;
+	return (numfun_uaddl(x, align, &r)) ? r : x;
 }
-
-//
 
 #endif
