@@ -50,30 +50,18 @@ static int ulist_grow_by_size(ulist_t * list, size_t extend)
 {
 	if (!extend) return 0;
 
-	size_t old_length = _ulist_item_mul(list, list->allocated);
-	size_t new_length = 0;
-	size_t want_realloc = memfun_want_realloc(old_length, extend, &new_length);
-	if (!new_length) {
-		// TODO: report overflow somehow
+	if (list->allocated >= _ulist_idx_t_max)
 		return 0;
-	}
 
-	size_t new_alloc = new_length / (size_t) list->ialign;
-	if ((new_alloc >= _ulist_idx_t_max) || (new_alloc <= list->allocated)) {
-		// TODO: report overflow somehow
-		return 0;
-	}
+	size_t _old, _new;
+	_new = _old = _ulist_item_mul(list, list->allocated);
+	void * nptr = memfun_realloc_ex(list->ptr, &_new, extend);
+	if (!nptr) return 0;
+	if (_new <= _old) return 0;
 
-	if (want_realloc) {
-		void * new_ptr = realloc(list->ptr, new_length);
-		if (!new_ptr) return 0;
-
-		list->ptr = new_ptr;
-	}
-
-	list->allocated = new_alloc;
-
-	memset(_ulist_item_ptr(list, list->used), 0, new_length - old_length);
+	size_t _alloc = _new / (size_t) list->ialign;
+	list->allocated = (_alloc < _ulist_idx_t_max) ? _alloc : _ulist_idx_t_max;
+	list->ptr = nptr;
 
 	return 1;
 }
@@ -109,7 +97,7 @@ static void ulist_init(ulist_t * list, ulist_idx_t item_size)
 
 static void ulist_free(ulist_t * list)
 {
-	free(list->ptr);
+	memfun_free(list->ptr, 0);
 	memset(list, 0, sizeof(ulist_t));
 }
 
