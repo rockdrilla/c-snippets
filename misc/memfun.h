@@ -53,10 +53,10 @@ static const size_t memfun_block_default
 = ((MEMFUN_BLOCK) < _MEMFUN_PAGE_DEFAULT)
 ? _MEMFUN_BLOCK_DEFAULT
 : ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : _MEMFUN_BLOCK_DEFAULT);
-#else
+#else /* ! MEMFUN_BLOCK */
 static const size_t memfun_block_default 
 = _MEMFUN_BLOCK_DEFAULT;
-#endif
+#endif /* MEMFUN_BLOCK */
 
 static size_t memfun_block_size(void)
 {
