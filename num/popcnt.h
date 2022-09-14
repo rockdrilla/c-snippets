@@ -25,11 +25,10 @@
  * (c) 2022, Konstantin Demin
  */
 
-#ifndef HEADER_INCLUDED_POPCNT
-#define HEADER_INCLUDED_POPCNT 1
+#ifndef HEADER_INCLUDED_NUM_POPCNT
+#define HEADER_INCLUDED_NUM_POPCNT 1
 
 #include <limits.h>
-#include <stdlib.h>
 
 #ifdef __has_builtin
   #if __has_builtin(__builtin_cpu_init)
@@ -122,8 +121,11 @@ _POPCNT_DEFINE_FUNC(ll, unsigned long long)
 
 #define _POPCNT_MACRO(v, t)  _POPCNT_T_R3(v, t)
 
-#define POPCNT_MACRO32(v)   _POPCNT_MACRO(((v) & UINT_MAX),   unsigned int)
-#define POPCNT_MACRO64(v)   _POPCNT_MACRO(((v) & ULLONG_MAX), unsigned long long)
+#define _POPCNT32(v) _POPCNT_MACRO(((v) & UINT_MAX),   unsigned int)
+#define _POPCNT64(v) _POPCNT_MACRO(((v) & ULLONG_MAX), unsigned long long)
+
+#define POPCNT_MACRO32(v)  ( (((v) & UINT_MAX)   == 0) ? 0 : _POPCNT32(v) )
+#define POPCNT_MACRO64(v)  ( (((v) & ULLONG_MAX) == 0) ? 0 : _POPCNT64(v) )
 
 #define _POPCNT_DEFINE_BITHACKS(n, t) \
 	_POPCNT_DECLARE_BITHACKS(n, t) \
@@ -143,4 +145,4 @@ _POPCNT_DEFINE_BITHACKS(,   unsigned int)
 _POPCNT_DEFINE_BITHACKS(l,  unsigned long)
 _POPCNT_DEFINE_BITHACKS(ll, unsigned long long)
 
-#endif /* HEADER_INCLUDED_POPCNT */
+#endif /* HEADER_INCLUDED_NUM_POPCNT */

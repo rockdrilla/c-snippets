@@ -13,7 +13,12 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "numfun.h"
+#include "../num/degree2.h"
+#include "../num/getmsb.h"
+#include "../num/popcnt.h"
+#include "../num/roundby.h"
+#include "../num/uadd.h"
+#include "../num/umul.h"
 
 #define _MEMFUN_PAGE_DEFAULT           4096
 #define _MEMFUN_BLOCK_DEFAULT          8192
@@ -52,7 +57,7 @@ static size_t memfun_page_size(void)
 static const size_t memfun_block_default
 = ((MEMFUN_BLOCK) < _MEMFUN_PAGE_DEFAULT)
 ? _MEMFUN_BLOCK_DEFAULT
-: ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : _MEMFUN_BLOCK_DEFAULT);
+: ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : DEGREE2_NEXT_MACRO64(MEMFUN_BLOCK));
 #else /* ! MEMFUN_BLOCK */
 static const size_t memfun_block_default 
 = _MEMFUN_BLOCK_DEFAULT;
@@ -93,10 +98,10 @@ static size_t _memfun_n2d_dumb(size_t x)
 		(POPCNT_MACRO64(length) == 1) \
 		? (length) \
 		: ( ((length) > sizeof(size_t)) \
-		    ? NUMFUN_MACRO_ROUND_BY(length, sizeof(size_t)) \
+		    ? ROUNDBY_MACRO(length, sizeof(size_t)) \
 		    : _MEMFUN_N2D_DUMB(length) \
 	) )
-// ^- using _MEMFUN_N2D_DUMB instead of NUMFUN_NEXT2DEGREE64 due to value "knowledge"
+// ^- using _MEMFUN_N2D_DUMB instead of DEGREE2_NEXT_MACRO64 due to value "knowledge"
 
 static size_t memfun_align(size_t length)
 {
@@ -105,10 +110,10 @@ static size_t memfun_align(size_t length)
 	if (popcntl(length) == 1) return length;
 
 	if (length > sizeof(size_t))
-		return numfun_round_by(length, sizeof(size_t));
+		return roundbyl(length, sizeof(size_t));
 
-	// using _memfun_n2d_dumb() instead of numfun_next2degreel() due to value "knowledge"
-//	return numfun_next2degreel(length);
+	// using _memfun_n2d_dumb() instead of degree2_nextl() due to value "knowledge"
+//	return degree2_nextl(length);
 	return _memfun_n2d_dumb(length);
 }
 
@@ -116,12 +121,12 @@ static inline size_t memfun_block_align(size_t length)
 {
 	if (!length) return 0;
 
-	return numfun_round_by(length, memfun_block_size());;
+	return roundbyl(length, memfun_block_size());;
 }
 
 #define MEMFUN_MACRO_CALC_GROWTH(item_size) \
 	( ((item_size) > (memfun_block_default >> memfun_growth_factor)) \
-	? NUMFUN_MACRO_ROUND_BY((item_size) << memfun_growth_factor, memfun_block_default) \
+	? ROUNDBY_MACRO((item_size) << memfun_growth_factor, memfun_block_default) \
 	: memfun_block_default \
 	)
 
@@ -142,7 +147,7 @@ static int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_le
 	if (!extend) return 0;
 
 	size_t result = 0;
-	if (!numfun_uaddl(length, extend, &result))
+	if (!uaddl(length, extend, &result))
 		return 0;
 
 	if (new_length) *new_length = result;
