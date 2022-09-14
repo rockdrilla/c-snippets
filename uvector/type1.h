@@ -27,15 +27,15 @@
 	_UVECTOR_PROC_GROW_BY_BYTES(user_t, index_t) \
 	_UVECTOR_PROC_GROW_BY_COUNT(user_t, index_t) \
 	_UVECTOR_PROC_GROW_AUTO(user_t) \
-    _UVECTOR_PROC_GET_BY_PTR(user_t, index_t, value_t) \
+	_UVECTOR_PROC_GET_BY_PTR(user_t, index_t, value_t) \
 	_UVECTOR_PROCINT_SET_BY_PTR(user_t, index_t, value_t) \
 	_UVECTOR_PROC_SET_BY_PTR(user_t, index_t, value_t) \
 	_UVECTOR_PROC_APPEND_BY_PTR(user_t, value_t) \
-    _UVECTOR_PROC_WALK(user_t, index_t, value_t) \
+	_UVECTOR_PROC_WALK(user_t, index_t, value_t) \
 	_UVECTOR_PROC_WALK_EX(user_t, index_t, value_t) \
 	_UVECTOR_PROC_CONST_WALK(user_t, index_t, value_t) \
 	_UVECTOR_PROC_CONST_WALK_EX(user_t, index_t, value_t) \
-    _UVECTOR_PROC_RWALK(user_t, index_t, value_t) \
+	_UVECTOR_PROC_RWALK(user_t, index_t, value_t) \
 	_UVECTOR_PROC_RWALK_EX(user_t, index_t, value_t) \
 	_UVECTOR_PROC_CONST_RWALK(user_t, index_t, value_t) \
 	_UVECTOR_PROC_CONST_RWALK_EX(user_t, index_t, value_t) \
