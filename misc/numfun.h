@@ -26,6 +26,21 @@
     #define _NUMFUN_HAVE_BUILTIN_UADDLL 1
     #endif
   #endif /* __builtin_uaddll_overflow */
+  #if __has_builtin(__builtin_umul_overflow)
+    #ifndef _NUMFUN_HAVE_BUILTIN_UMUL
+    #define _NUMFUN_HAVE_BUILTIN_UMUL 1
+    #endif
+  #endif /* __builtin_umul_overflow */
+  #if __has_builtin(__builtin_umull_overflow)
+    #ifndef _NUMFUN_HAVE_BUILTIN_UMULL
+    #define _NUMFUN_HAVE_BUILTIN_UMULL 1
+    #endif
+  #endif /* __builtin_umull_overflow */
+  #if __has_builtin(__builtin_umulll_overflow)
+    #ifndef _NUMFUN_HAVE_BUILTIN_UMULLL
+    #define _NUMFUN_HAVE_BUILTIN_UMULLL 1
+    #endif
+  #endif /* __builtin_umulll_overflow */
 #endif /* __has_builtin */
 
 // SLB = set lower bits
@@ -86,6 +101,37 @@ _NUMFUN_DEFINE_UADD_FUNC(l, unsigned long)
 #else /* ! _NUMFUN_HAVE_BUILTIN_UADDLL */
 _NUMFUN_DEFINE_UADD_FUNC(ll, unsigned long long)
 #endif /* _NUMFUN_HAVE_BUILTIN_UADDLL */
+
+// TODO: write fair enough version
+#define _NUMFUN_DEFINE_UMUL_FUNC(n, t) \
+	static int numfun_umul ## n (t a, t b, t * r) { \
+		t res = a * b; \
+		if (a > b) { \
+			if (res < a) return 0; \
+		} else { \
+			if (res < b) return 0; \
+		} \
+		if (r) *r = res; \
+		return 1; \
+	}
+
+#if _NUMFUN_HAVE_BUILTIN_UMUL
+#define numfun_umul(a, b, r) (!__builtin_umul_overflow(a, b, r))
+#else /* ! _NUMFUN_HAVE_BUILTIN_UMUL */
+_NUMFUN_DEFINE_UMUL_FUNC(, unsigned int)
+#endif /* _NUMFUN_HAVE_BUILTIN_UMUL */
+
+#if _NUMFUN_HAVE_BUILTIN_UMULL
+#define numfun_umull(a, b, r) (!__builtin_umull_overflow(a, b, r))
+#else /* ! _NUMFUN_HAVE_BUILTIN_UMULL */
+_NUMFUN_DEFINE_UMUL_FUNC(l, unsigned long)
+#endif /* _NUMFUN_HAVE_BUILTIN_UMULL */
+
+#if _NUMFUN_HAVE_BUILTIN_UMULLL
+#define numfun_umulll(a, b, r) (!__builtin_umulll_overflow(a, b, r))
+#else /* ! _NUMFUN_HAVE_BUILTIN_UMULLL */
+_NUMFUN_DEFINE_UMUL_FUNC(ll, unsigned long long)
+#endif /* _NUMFUN_HAVE_BUILTIN_UMULLL */
 
 #define NUMFUN_NEXT2DEGREE32(v)  ( 1 + NUMFUN_MACRO_SET_LOWER_BITS32(v) )
 #define NUMFUN_NEXT2DEGREE64(v)  ( 1 + NUMFUN_MACRO_SET_LOWER_BITS64(v) )
