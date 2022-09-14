@@ -13,7 +13,7 @@
 #ifndef HEADER_INCLUDED_UHASH_TYPE0
 #define HEADER_INCLUDED_UHASH_TYPE0 1
 
-#include "uhash-common.h"
+#include "common.h"
 
 #define _UHASH_NAMEPROC_NODE_VISITOR__TYPE0(user_t, key_t) \
 	typedef int (* UHASH_NAME(user_t, node_proc) ) (key_t key);
