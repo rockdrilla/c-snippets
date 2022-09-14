@@ -20,7 +20,7 @@
 
 #define _UHASH_NAME_NODE__TYPE1(user_t, key_t, value_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
-		uhash_idx_t  left, right; \
+		UHASH_IDX_T  left, right; \
 		int          depth; \
 		key_t        key; \
 		value_t      value; \
@@ -41,7 +41,7 @@
 	} \
 	\
 	static const value_t * \
-	UHASH_PROC(user_t, value) (const user_t * hash, uhash_idx_t node_index) { \
+	UHASH_PROC(user_t, value) (const user_t * hash, UHASH_IDX_T node_index) { \
 		const UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, cnode, hash, node_index); \
 		if (!node) return NULL; \
 		return &(node->value); \
@@ -53,7 +53,7 @@
 	} \
 	\
 	static void \
-	UHASH_PROC(user_t, set_value) (user_t * hash, uhash_idx_t node_index, value_t value) { \
+	UHASH_PROC(user_t, set_value) (user_t * hash, UHASH_IDX_T node_index, value_t value) { \
 		UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, node, hash, node_index); \
 		if (!node) return; \
 		UHASH_CALL_INT(user_t, set_value, hash, node, value); \
@@ -88,7 +88,7 @@
 	_UHASH_PROC_SEARCH__TYPE0(user_t, key_t)
 
 #define _UHASH_PROC_INSERT__TYPE1(user_t, key_t, value_t) \
-	static uhash_idx_t \
+	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, key_t key, value_t value) \
 		_UHASH_PROCIMPL_INSERT(user_t)
 
@@ -100,6 +100,8 @@
 	_UHASH_NAMEPROC_CMP_KEY_PLAIN(user_t, key_t) \
 	\
 	_UHASH_NAME_NODE__TYPE1(user_t, key_t, value_t) \
+	UVECTOR_DEFINE_TYPE0(UVECTOR_NAME(user_t, v_idx),  UHASH_IDX_T, UHASH_IDX_T) \
+	UVECTOR_DEFINE_TYPE1(UVECTOR_NAME(user_t, v_node), UHASH_IDX_T, UHASH_NAME(user_t, node)) \
 	typedef struct { \
 		_UHASH_NAMEIMPL__TYPE1(user_t) \
 	} user_t; \

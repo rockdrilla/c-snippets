@@ -20,15 +20,15 @@
 
 #define _UHASH_NAME_NODE__TYPE0(user_t, key_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
-		uhash_idx_t  left, right; \
+		UHASH_IDX_T  left, right; \
 		int          depth; \
 		key_t        key; \
 	} UHASH_NAME(user_t, node);
 
 #define _UHASH_NAMEIMPL__TYPE0(user_t) \
-	ulist_t                   nodes; \
-	uhash_idx_t               tree_root; \
-	UHASH_NAME(user_t, key_cmp)  key_comparator;
+	UVECTOR_NAME(user_t, v_node)   nodes; \
+	UHASH_NAME(user_t, key_cmp)    key_comparator; \
+	UHASH_IDX_T                    tree_root;
 
 
 #define _UHASH_PROC_KEY__TYPE0(user_t, key_t) \
@@ -38,7 +38,7 @@
 	} \
 	\
 	static const key_t * \
-	UHASH_PROC(user_t, key) (const user_t * hash, uhash_idx_t node_index) { \
+	UHASH_PROC(user_t, key) (const user_t * hash, UHASH_IDX_T node_index) { \
 		const UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, cnode, hash, node_index); \
 		if (!node) return NULL; \
 		return &(node->key); \
@@ -50,7 +50,7 @@
 	} \
 	\
 	static void \
-	UHASH_PROC(user_t, set_key) (user_t * hash, uhash_idx_t node_index, key_t key) { \
+	UHASH_PROC(user_t, set_key) (user_t * hash, UHASH_IDX_T node_index, key_t key) { \
 		UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, node, hash, node_index); \
 		if (!node) return; \
 		UHASH_CALL_INT(user_t, set_key, hash, node, key); \
@@ -80,7 +80,7 @@
 #define _UHASH_PROCIMPL_INIT__TYPE0(user_t) \
 	{ \
 	memset(hash, 0, sizeof(user_t)); \
-	ulist_init(&hash->nodes, sizeof(UHASH_NAME(user_t, node))); \
+	UHASH_VCALL(user_t, v_node, init, &hash->nodes); \
 	}
 
 #define _UHASH_PROC_INIT__TYPE0(user_t) \
@@ -90,7 +90,7 @@
 
 #define _UHASH_PROCIMPL_FREE__TYPE0(user_t) \
 	{ \
-	ulist_free(&hash->nodes); \
+	UHASH_VCALL(user_t, v_node, free, &hash->nodes); \
 	memset(hash, 0, sizeof(user_t)); \
 	}
 
@@ -101,12 +101,12 @@
 
 
 #define _UHASH_PROC_SEARCH__TYPE0(user_t, key_t) \
-	static uhash_idx_t \
+	static UHASH_IDX_T \
 	UHASH_PROC(user_t, search) (user_t * hash, key_t key) \
 		_UHASH_PROCIMPL_SEARCH(user_t)
 
 #define _UHASH_PROC_INSERT__TYPE0(user_t, key_t) \
-	static uhash_idx_t \
+	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, key_t key) { \
 		void * value = NULL; \
 		_UHASH_PROCIMPL_INSERT(user_t) \
@@ -119,6 +119,8 @@
 	_UHASH_NAMEPROC_CMP_KEY_PLAIN(user_t, key_t) \
 	\
 	_UHASH_NAME_NODE__TYPE0(user_t, key_t) \
+	UVECTOR_DEFINE_TYPE0(UVECTOR_NAME(user_t, v_idx),  UHASH_IDX_T, UHASH_IDX_T) \
+	UVECTOR_DEFINE_TYPE1(UVECTOR_NAME(user_t, v_node), UHASH_IDX_T, UHASH_NAME(user_t, node)) \
 	typedef struct { \
 		_UHASH_NAMEIMPL__TYPE0(user_t) \
 	} user_t; \

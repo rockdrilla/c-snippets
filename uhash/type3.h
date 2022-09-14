@@ -20,30 +20,25 @@
 
 #define _UHASH_NAME_NODE__TYPE3(user_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
-		uhash_idx_t  left, right; \
+		UHASH_IDX_T  left, right; \
 		int          depth; \
-		uhash_idx_t  key, value; \
+		UHASH_IDX_T  key, value; \
 	} UHASH_NAME(user_t, node);
 
-/*
 #define _UHASH_NAMEIMPL__TYPE3(user_t) \
-	_UHASH_NAMEIMPL__TYPE2(user_t) \
-	ulist_t  keys;
-*/
-#define _UHASH_NAMEIMPL__TYPE3(user_t) \
-	ulist_t                      nodes; \
-	uhash_idx_t                  tree_root; \
-	ulist_t                      keys; \
+	UVECTOR_NAME(user_t, v_node)    nodes; \
+	UVECTOR_NAME(user_t, v_key)     keys; \
+	UVECTOR_NAME(user_t, v_value)   values; \
 	UHASH_NAME(user_t, key_cmp)     key_comparator; \
-	ulist_t                      values; \
 	UHASH_NAME(user_t, value_proc)  value_constructor; \
-	UHASH_NAME(user_t, value_proc)  value_destructor;
+	UHASH_NAME(user_t, value_proc)  value_destructor; \
+	UHASH_IDX_T                     tree_root;
 
 
 #define _UHASH_PROC_KEY__TYPE3(user_t, key_t) \
 	static inline const key_t * \
-	UHASH_PROC_INT(user_t, raw_key) (const user_t * hash, uhash_idx_t index) { \
-		return ulist_get(&hash->keys, _uhash_idx_int(index)); \
+	UHASH_PROC_INT(user_t, raw_key) (const user_t * hash, UHASH_IDX_T index) { \
+		return UHASH_VCALL(user_t, v_key, get_by_ptr, &hash->keys, _uhash_idx_int(index)); \
 	} \
 	\
 	static inline const key_t * \
@@ -52,7 +47,7 @@
 	} \
 	\
 	static const key_t * \
-	UHASH_PROC(user_t, key) (const user_t * hash, uhash_idx_t node_index) { \
+	UHASH_PROC(user_t, key) (const user_t * hash, UHASH_IDX_T node_index) { \
 		const UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, cnode, hash, node_index); \
 		if (!node) return NULL; \
 		return UHASH_CALL_INT(user_t, key, hash, node); \
@@ -60,24 +55,24 @@
 	\
 	static void \
 	UHASH_PROC_INT(user_t, set_key) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t * key) { \
-		uhash_idx_t i; \
+		UHASH_IDX_T i; \
 		switch (node->key) { \
 		case 0: \
 			if (!key) break; \
-			i = ulist_append(&(hash->keys), key); \
-			if (i == ulist_invalid_idx_t) break; \
+			i = UHASH_VCALL(user_t, v_key, append_by_ptr, &hash->keys, key); \
+			if (UHASH_VCALL(user_t, v_key, is_inv, i)) break; \
 			node->key = _uhash_idx_pub(i); \
 			break; \
 		default: \
 			i = _uhash_idx_int(node->key); \
-			ulist_set(&(hash->keys), i, key); \
+			UHASH_VCALL(user_t, v_key, set_by_ptr, &hash->keys, i, key); \
 			if (!key) \
 				node->key = 0; \
 		} \
 	} \
 	\
 	static void \
-	UHASH_PROC(user_t, set_key) (user_t * hash, uhash_idx_t node_index, key_t * key) { \
+	UHASH_PROC(user_t, set_key) (user_t * hash, UHASH_IDX_T node_index, key_t * key) { \
 		UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, node, hash, node_index); \
 		if (!node) return; \
 		UHASH_CALL_INT(user_t, set_key, hash, node, key); \
@@ -108,7 +103,7 @@
 #define _UHASH_PROCIMPL_INIT__TYPE3(user_t, key_t, value_t) \
 	{ \
 	_UHASH_PROCIMPL_INIT__TYPE2(user_t, value_t) \
-	ulist_init(&hash->keys, sizeof(key_t)); \
+	UHASH_VCALL(user_t, v_key, init, &hash->keys); \
 	}
 
 #define _UHASH_PROC_INIT__TYPE3(user_t, key_t, value_t) \
@@ -118,7 +113,7 @@
 
 #define _UHASH_PROCIMPL_FREE__TYPE3(user_t) \
 	{ \
-	ulist_free(&hash->keys); \
+	UHASH_VCALL(user_t, v_key, free, &hash->keys); \
 	_UHASH_PROCIMPL_FREE__TYPE2(user_t) \
 	}
 
@@ -129,12 +124,12 @@
 
 
 #define _UHASH_PROC_SEARCH__TYPE3(user_t, key_t) \
-	static uhash_idx_t \
+	static UHASH_IDX_T \
 	UHASH_PROC(user_t, search) (user_t * hash, key_t * key) \
 		_UHASH_PROCIMPL_SEARCH(user_t)
 
 #define _UHASH_PROC_INSERT__TYPE3(user_t, key_t, value_t) \
-	static uhash_idx_t \
+	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, key_t * key, value_t * value) \
 		_UHASH_PROCIMPL_INSERT(user_t)
 
@@ -146,6 +141,10 @@
 	_UHASH_NAMEPROC_CMP_KEY_PTR(user_t, key_t) \
 	\
 	_UHASH_NAME_NODE__TYPE3(user_t) \
+	UVECTOR_DEFINE_TYPE0(UVECTOR_NAME(user_t, v_idx),   UHASH_IDX_T, UHASH_IDX_T) \
+	UVECTOR_DEFINE_TYPE1(UVECTOR_NAME(user_t, v_node),  UHASH_IDX_T, UHASH_NAME(user_t, node)) \
+	UVECTOR_DEFINE_TYPE1(UVECTOR_NAME(user_t, v_key),   UHASH_IDX_T, key_t) \
+	UVECTOR_DEFINE_TYPE1(UVECTOR_NAME(user_t, v_value), UHASH_IDX_T, value_t) \
 	typedef struct { \
 		_UHASH_NAMEIMPL__TYPE3(user_t) \
 	} user_t; \
