@@ -7,7 +7,7 @@
 #ifndef HEADER_INCLUDED_NUM_UMUL
 #define HEADER_INCLUDED_NUM_UMUL 1
 
-#if defined __has_builtin
+#ifdef __has_builtin
   #if __has_builtin(__builtin_umul_overflow)
     #ifndef _UMUL_HAVE_BUILTIN
     #define _UMUL_HAVE_BUILTIN 1

@@ -7,7 +7,7 @@
 #ifndef HEADER_INCLUDED_NUM_UADD
 #define HEADER_INCLUDED_NUM_UADD 1
 
-#if defined __has_builtin
+#ifdef __has_builtin
   #if __has_builtin(__builtin_uadd_overflow)
     #ifndef _UADD_HAVE_BUILTIN
     #define _UADD_HAVE_BUILTIN 1

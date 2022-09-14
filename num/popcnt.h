@@ -38,7 +38,7 @@
     #endif
   #endif /* __has_builtin(__builtin_cpu_supports) */
   #endif /* __has_builtin(__builtin_cpu_init) */
-#endif /* defined __has_builtin */
+#endif /* __has_builtin */
 #ifndef _POPCNT_HAVE_BUILTIN
 #define _POPCNT_HAVE_BUILTIN 0
 #endif
