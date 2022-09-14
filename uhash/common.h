@@ -30,8 +30,6 @@
   #define UHASH_IDX_T  size_t
 #endif
 
-#define ULIST_IDX_T  UHASH_IDX_T
-
 #include "../uvector/uvector.h"
 #include "../misc/kustom.h"
 
