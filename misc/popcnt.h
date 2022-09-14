@@ -32,14 +32,16 @@
 #include <stdlib.h>
 
 #ifdef __has_builtin
-  #if __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports)
+  #if __has_builtin(__builtin_cpu_init)
+  #if __has_builtin(__builtin_cpu_supports)
     #ifndef _POPCNT_HAVE_BUILTIN
-      #define _POPCNT_HAVE_BUILTIN 1
+    #define _POPCNT_HAVE_BUILTIN 1
     #endif
-  #endif /* __has_builtin(__builtin_cpu_init) && __has_builtin(__builtin_cpu_supports) */
+  #endif /* __has_builtin(__builtin_cpu_supports) */
+  #endif /* __has_builtin(__builtin_cpu_init) */
 #endif /* defined __has_builtin */
 #ifndef _POPCNT_HAVE_BUILTIN
-  #define _POPCNT_HAVE_BUILTIN 0
+#define _POPCNT_HAVE_BUILTIN 0
 #endif
 #ifndef POPCNT_NO_BUILTIN
   #if _POPCNT_HAVE_BUILTIN
