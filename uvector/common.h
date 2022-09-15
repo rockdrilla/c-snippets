@@ -9,25 +9,6 @@
 #ifndef HEADER_INCLUDED_UVECTOR_COMMON
 #define HEADER_INCLUDED_UVECTOR_COMMON 1
 
-// #define UVECTOR_LEGACY
-
-#ifdef GCC_VERSION
-  #if GCC_VERSION < 80000
-    #define _UVECTOR_LEGACY 1
-  #endif
-#endif /* GCC_VERSION */
-
-#ifndef UVECTOR_LEGACY
-  #ifndef _UVECTOR_LEGACY
-  #define _UVECTOR_LEGACY 0
-  #endif
-#else /* UVECTOR_LEGACY */
-  #ifdef _UVECTOR_LEGACY
-  #undef _UVECTOR_LEGACY
-  #endif
-  #define _UVECTOR_LEGACY 1
-#endif /* UVECTOR_LEGACY */
-
 #include "../misc/cc-inline.h"
 #include "../misc/memfun.h"
 #include "../misc/kustom.h"
@@ -37,8 +18,6 @@
 #define UVECTOR_CALL        KUSTOM_CALL
 #define UVECTOR_PROC_INT    KUSTOM_PROC_INT
 #define UVECTOR_CALL_INT    KUSTOM_CALL_INT
-
-#if ! _UVECTOR_LEGACY
 
 #define _UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
 	static const size_t UVECTOR_NAME(user_t, item_size)  = sizeof(value_t); \
@@ -57,38 +36,6 @@
 	\
 	static const index_t UVECTOR_NAME(user_t, idx_mask_inv)   = UVECTOR_NAME(user_t, idx_max_r) & ~(UVECTOR_NAME(user_t, idx_max)); \
 	static const index_t UVECTOR_NAME(user_t, idx_mask_wfall) = UVECTOR_NAME(user_t, idx_max)   & ~(UVECTOR_NAME(user_t, idx_max_safe)); \
-
-#else /* _UVECTOR_LEGACY */
-
-#define _UVECTOR_ALIGN_SIZE(value_t)  (MEMFUN_MACRO_ALIGN(sizeof(value_t)))
-#define _UVECTOR_GROWTH(value_t)      (MEMFUN_MACRO_CALC_GROWTH(_UVECTOR_ALIGN_SIZE(value_t)))
-#define _UVECTOR_ALIGN_BITS(value_t)  (GETMSB_MACRO32(sizeof(value_t)))
-
-#define _UVECTOR_IDX_BITS_R(index_t)    (sizeof(index_t) * CHAR_BIT)
-#define _UVECTOR_IDX_MAX_R(index_t)     (~((index_t) 0))
-
-#define _UVECTOR_IDX_MAX(index_t, value_t)       (_UVECTOR_IDX_MAX_R(index_t) >> _UVECTOR_ALIGN_BITS(value_t))
-#define _UVECTOR_IDX_MAX_SAFE(index_t, value_t)  (_UVECTOR_IDX_MAX(index_t, value_t) >> 1)
-
-#define _UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
-	static const size_t UVECTOR_NAME(user_t, item_size)  = sizeof(value_t); \
-	static const size_t UVECTOR_NAME(user_t, align_size) = _UVECTOR_ALIGN_SIZE(value_t); \
-	static const size_t UVECTOR_NAME(user_t, pad_size)   = _UVECTOR_ALIGN_SIZE(value_t) - sizeof(value_t); \
-	static const size_t UVECTOR_NAME(user_t, growth)     = _UVECTOR_GROWTH(value_t); \
-	static const int    UVECTOR_NAME(user_t, align_bits) = _UVECTOR_ALIGN_BITS(value_t); \
-	\
-	static const int     UVECTOR_NAME(user_t, idx_bits_r) = _UVECTOR_IDX_BITS_R(index_t); \
-	static const index_t UVECTOR_NAME(user_t, idx_max_r)  = _UVECTOR_IDX_MAX_R(index_t); \
-	\
-	static const int     UVECTOR_NAME(user_t, idx_bits)     = _UVECTOR_IDX_BITS_R(index_t) - _UVECTOR_ALIGN_BITS(value_t); \
-	static const index_t UVECTOR_NAME(user_t, idx_max)      = _UVECTOR_IDX_MAX(index_t, value_t); \
-	static const index_t UVECTOR_NAME(user_t, idx_inv)      = _UVECTOR_IDX_MAX_R(index_t); \
-	static const index_t UVECTOR_NAME(user_t, idx_max_safe) = _UVECTOR_IDX_MAX_SAFE(index_t, value_t); \
-	\
-	static const index_t UVECTOR_NAME(user_t, idx_mask_inv)   = _UVECTOR_IDX_MAX_R(index_t) & ~(_UVECTOR_IDX_MAX(index_t, value_t)); \
-	static const index_t UVECTOR_NAME(user_t, idx_mask_wfall) = _UVECTOR_IDX_MAX(index_t, value_t) & ~(_UVECTOR_IDX_MAX_SAFE(index_t, value_t)); \
-
-#endif /* _UVECTOR_LEGACY */
 
 #define _UVECTOR_DEFINE_TYPE(user_t, index_t, value_t) \
 	typedef struct { \
