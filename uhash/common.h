@@ -30,8 +30,9 @@
   #define UHASH_IDX_T  size_t
 #endif
 
-#include "../uvector/uvector.h"
+#include "../misc/cc-inline.h"
 #include "../misc/kustom.h"
+#include "../uvector/uvector.h"
 
 #define UHASH_NAME(t, k)  KUSTOM_NAME(uhash, t, k)
 #define UHASH_PROC        KUSTOM_PROC
@@ -65,8 +66,8 @@
 static const int _uhash_avl_left  = 0;
 static const int _uhash_avl_right = 1;
 
-static inline UHASH_IDX_T _uhash_idx_int(UHASH_IDX_T idx) { return (idx - 1); }
-static inline UHASH_IDX_T _uhash_idx_pub(UHASH_IDX_T idx) { return (idx + 1); }
+static CC_FORCE_INLINE UHASH_IDX_T _uhash_idx_int(UHASH_IDX_T idx) { return (idx - 1); }
+static CC_FORCE_INLINE UHASH_IDX_T _uhash_idx_pub(UHASH_IDX_T idx) { return (idx + 1); }
 
 #define _UHASH_IDX_T__WIDTH          (sizeof(UHASH_IDX_T) * CHAR_BIT)
 #define _UHASH_IDX_T__SELECTOR_BITS  2
@@ -82,10 +83,10 @@ static inline UHASH_IDX_T _uhash_idx_pub(UHASH_IDX_T idx) { return (idx + 1); }
 #define UHASH_NODE_SELECTOR_ROOT   3
 #define _UHASH_NODE_SELECTOR_MASK  3
 
-static inline UHASH_IDX_T _uhash_idx_truindex(UHASH_IDX_T idx) { return idx &  _UHASH_IDX_T__TRUINDEX_MASK; }
-static inline UHASH_IDX_T _uhash_idx_selector(UHASH_IDX_T idx) { return idx >> _UHASH_IDX_T__TRUINDEX_BITS; }
+static CC_FORCE_INLINE UHASH_IDX_T _uhash_idx_truindex(UHASH_IDX_T idx) { return idx &  _UHASH_IDX_T__TRUINDEX_MASK; }
+static CC_FORCE_INLINE UHASH_IDX_T _uhash_idx_selector(UHASH_IDX_T idx) { return idx >> _UHASH_IDX_T__TRUINDEX_BITS; }
 
-static inline UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, UHASH_IDX_T truindex) {
+static CC_FORCE_INLINE UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, UHASH_IDX_T truindex) {
 	return _uhash_idx_truindex(truindex) | ((selector & _UHASH_NODE_SELECTOR_MASK) << _UHASH_IDX_T__TRUINDEX_BITS);
 }
 
@@ -102,7 +103,7 @@ static inline UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, UHASH_IDX_
 	typedef int (* UHASH_NAME(user_t, key_cmp) ) (const key_t * key1, const key_t * key2);
 
 #define _UHASH_PROC_NODE(user_t) \
-	static inline UHASH_NAME(user_t, node) * \
+	static CC_FORCE_INLINE UHASH_NAME(user_t, node) * \
 	UHASH_PROC_INT(user_t, node) (user_t * hash, UHASH_IDX_T index) { \
 		return UHASH_VCALL(user_t, v_node, get_by_ptr, &hash->nodes, _uhash_idx_int(index)); \
 	} \
@@ -111,7 +112,7 @@ static inline UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, UHASH_IDX_
 	UHASH_PROC(user_t, node) (user_t * hash, UHASH_IDX_T node_index) { \
 		return (node_index) ? UHASH_CALL_INT(user_t, node, hash, node_index) : NULL; \
 	} \
-	static inline const UHASH_NAME(user_t, node) * \
+	static CC_FORCE_INLINE const UHASH_NAME(user_t, node) * \
 	UHASH_PROC_INT(user_t, cnode) (const user_t * hash, UHASH_IDX_T index) { \
 		return UHASH_VCALL(user_t, v_node, get_by_ptr, &hash->nodes, _uhash_idx_int(index)); \
 	} \

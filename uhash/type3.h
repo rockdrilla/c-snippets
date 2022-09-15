@@ -33,12 +33,12 @@
 
 
 #define _UHASH_PROC_KEY__TYPE3(user_t, key_t) \
-	static inline const key_t * \
+	static CC_FORCE_INLINE const key_t * \
 	UHASH_PROC_INT(user_t, raw_key) (const user_t * hash, UHASH_IDX_T index) { \
 		return UHASH_VCALL(user_t, v_key, get_by_ptr, &hash->keys, _uhash_idx_int(index)); \
 	} \
 	\
-	static inline const key_t * \
+	static CC_FORCE_INLINE const key_t * \
 	UHASH_PROC_INT(user_t, key) (const user_t * hash, const UHASH_NAME(user_t, node) * node) { \
 		return (node->key) ? UHASH_CALL_INT(user_t, raw_key, hash, node->key) : NULL; \
 	} \
@@ -81,7 +81,7 @@
 
 
 #define _UHASH_PROC__INIT_NODE__TYPE3(user_t, key_t, value_t) \
-	static inline void \
+	static CC_FORCE_INLINE void \
 	UHASH_PROC_INT(user_t, init_node) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t * key, value_t * value) { \
 		node->depth = 1; \
 		UHASH_CALL_INT(user_t, set_key, hash, node, key); \

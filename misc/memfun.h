@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "cc-inline.h"
 #include "../num/degree2.h"
 #include "../num/getmsb.h"
 #include "../num/popcnt.h"
@@ -100,7 +101,7 @@ static const unsigned int memfun_growth_factor
 #define _MEMFUN_N2D_DUMB(x) \
 	( ((x)<<1) & ~((x)|((x)>>1)|((x)>>2)|((x)>>3)|((x)>>4)|((x)>>5)) )
 
-static inline size_t _memfun_n2d_dumb(size_t x)
+static CC_FORCE_INLINE size_t _memfun_n2d_dumb(size_t x)
 {
 	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5));
 }
@@ -129,7 +130,7 @@ static size_t memfun_align(size_t length)
 	return _memfun_n2d_dumb(length);
 }
 
-static inline size_t memfun_block_align(size_t length)
+static CC_FORCE_INLINE size_t memfun_block_align(size_t length)
 {
 	if (!length) return 0;
 
@@ -205,7 +206,7 @@ static void * memfun_alloc_ex(size_t * length)
 	return ptr;
 }
 
-static inline void * memfun_alloc(size_t length)
+static CC_FORCE_INLINE void * memfun_alloc(size_t length)
 {
 	size_t len = length;
 	return memfun_alloc_ex(&len);
@@ -256,7 +257,7 @@ static void * memfun_realloc_ex(void * ptr, size_t * length, size_t extend)
 	return _memfun_realloc(ptr, _old, _new);
 }
 
-static inline void * memfun_realloc(void * ptr, size_t length, size_t extend)
+static CC_FORCE_INLINE void * memfun_realloc(void * ptr, size_t length, size_t extend)
 {
 	size_t old = length;
 	return memfun_realloc_ex(ptr, &old, extend);

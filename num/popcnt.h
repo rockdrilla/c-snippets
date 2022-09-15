@@ -30,6 +30,8 @@
 
 #include <limits.h>
 
+#include "../misc/cc-inline.h"
+
 #ifdef __has_builtin
   #if __has_builtin(__builtin_cpu_init)
   #if __has_builtin(__builtin_cpu_supports)
@@ -53,7 +55,7 @@ static int popcntl(unsigned long x);
 static int popcntll(unsigned long long x);
 
 #define _POPCNT_BITHACKS(n)             popcnt_bithacks ## n
-#define _POPCNT_DECLARE_BITHACKS(n, t)  static inline int _POPCNT_BITHACKS(n) (t x)
+#define _POPCNT_DECLARE_BITHACKS(n, t)  static CC_FORCE_INLINE int _POPCNT_BITHACKS(n) (t x)
 
 _POPCNT_DECLARE_BITHACKS(,   unsigned int);
 _POPCNT_DECLARE_BITHACKS(l,  unsigned long);
