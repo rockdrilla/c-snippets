@@ -15,9 +15,6 @@
 
 #include "common.h"
 
-#define _UHASH_NAMEPROC_NODE_VISITOR__TYPE0(user_t, key_t) \
-	typedef int (* UHASH_NAME(user_t, node_proc) ) (key_t key);
-
 #define _UHASH_NAME_NODE__TYPE0(user_t, key_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
 		UHASH_IDX_T  left, right; \
@@ -69,14 +66,6 @@
 		UHASH_CALL_INT(user_t, init_node_real, hash, node, key); \
 	}
 
-#define _UHASH_PROC__NODE_VISITOR__TYPE0(user_t) \
-	static inline int \
-	UHASH_PROC_INT(user_t, node_visitor) (const user_t * hash, const UHASH_NAME(user_t, node) * node, UHASH_NAME(user_t, node_proc) visitor) { \
-		return visitor( \
-			UHASH_CALL_INT(user_t, key, hash, node) \
-		); \
-	}
-
 #define _UHASH_PROCIMPL_INIT__TYPE0(user_t) \
 	{ \
 	memset(hash, 0, sizeof(user_t)); \
@@ -114,7 +103,6 @@
 
 
 #define UHASH_DEFINE_TYPE0(user_t, key_t) \
-	_UHASH_NAMEPROC_NODE_VISITOR__TYPE0(user_t, key_t) \
 	_UHASH_NAMEPROC_KEY_VISITOR(user_t, key_t) \
 	_UHASH_NAMEPROC_CMP_KEY_PLAIN(user_t, key_t) \
 	\
@@ -129,7 +117,6 @@
 	_UHASH_PROC_KEY__TYPE0(user_t, key_t) \
 	\
 	_UHASH_PROC__INIT_NODE__TYPE0(user_t, key_t) \
-	_UHASH_PROC__NODE_VISITOR__TYPE0(user_t) \
 	_UHASH_PROC_INIT__TYPE0(user_t) \
 	_UHASH_PROC_FREE__TYPE0(user_t) \
 	\
@@ -145,7 +132,6 @@
 	_UHASH_PROC_ROTATE_RIGHT(user_t) \
 	_UHASH_PROC_ROTATE(user_t) \
 	_UHASH_PROC_REBALANCE(user_t) \
-	_UHASH_PROC_WALK(user_t) \
 	\
 	_UHASH_PROC_SEARCH__TYPE0(user_t, key_t) \
 	_UHASH_PROC_INSERT__TYPE0(user_t, key_t) \

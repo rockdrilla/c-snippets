@@ -15,9 +15,6 @@
 
 #include "type2.h"
 
-#define _UHASH_NAMEPROC_NODE_VISITOR__TYPE3(user_t, key_t, value_t) \
-	typedef int (* UHASH_NAME(user_t, node_proc) ) (const key_t * key, const value_t * value);
-
 #define _UHASH_NAME_NODE__TYPE3(user_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
 		UHASH_IDX_T  left, right; \
@@ -91,15 +88,6 @@
 		UHASH_CALL_INT(user_t, set_value, hash, node, value); \
 	}
 
-#define _UHASH_PROC__NODE_VISITOR__TYPE3(user_t) \
-	static inline int \
-	UHASH_PROC_INT(user_t, node_visitor) (const user_t * hash, const UHASH_NAME(user_t, node) * node, UHASH_NAME(user_t, node_proc) visitor) { \
-		return visitor( \
-			UHASH_CALL_INT(user_t, key, hash, node), \
-			UHASH_CALL_INT(user_t, value, hash, node) \
-		); \
-	}
-
 #define _UHASH_PROCIMPL_INIT__TYPE3(user_t, key_t, value_t) \
 	{ \
 	_UHASH_PROCIMPL_INIT__TYPE2(user_t, value_t) \
@@ -135,7 +123,6 @@
 
 
 #define UHASH_DEFINE_TYPE3(user_t, key_t, value_t) \
-	_UHASH_NAMEPROC_NODE_VISITOR__TYPE3(user_t, key_t, value_t) \
 	_UHASH_NAMEPROC_KEY_VISITOR(user_t, key_t) \
 	_UHASH_NAMEPROC_VALUE_VISITOR(user_t, value_t) \
 	_UHASH_NAMEPROC_CMP_KEY_PTR(user_t, key_t) \
@@ -154,7 +141,6 @@
 	_UHASH_PROC_VALUE__TYPE3(user_t, value_t) \
 	\
 	_UHASH_PROC__INIT_NODE__TYPE3(user_t, key_t, value_t) \
-	_UHASH_PROC__NODE_VISITOR__TYPE3(user_t) \
 	_UHASH_PROC_INIT__TYPE3(user_t, key_t, value_t) \
 	_UHASH_PROC_FREE__TYPE3(user_t) \
 	\
@@ -170,7 +156,6 @@
 	_UHASH_PROC_ROTATE_RIGHT(user_t) \
 	_UHASH_PROC_ROTATE(user_t) \
 	_UHASH_PROC_REBALANCE(user_t) \
-	_UHASH_PROC_WALK(user_t) \
 	\
 	_UHASH_PROC_SEARCH__TYPE3(user_t, key_t) \
 	_UHASH_PROC_INSERT__TYPE3(user_t, key_t, value_t) \

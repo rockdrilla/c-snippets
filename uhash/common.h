@@ -349,12 +349,4 @@ static inline UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, UHASH_IDX_
 		return *node_index_ptr; \
 	}
 
-#define _UHASH_PROC_WALK(user_t) \
-	static void \
-	UHASH_PROC(user_t, walk) (const user_t * hash, UHASH_NAME(user_t, node_proc) visitor) { \
-		for (UHASH_IDX_T i = 0; i < hash->nodes.used; i++) { \
-			UHASH_CALL_INT(user_t, node_visitor, hash, UHASH_VCALL(user_t, v_node, get_by_ptr, &hash->nodes, i), visitor); \
-		} \
-	}
-
 #endif /* HEADER_INCLUDED_UHASH_COMMON */
