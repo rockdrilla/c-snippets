@@ -314,7 +314,7 @@ static CC_FORCE_INLINE UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, U
 				UHASH_IDX_T i = UHASH_VCALL(user_t, v_node, append_by_ptr, &(hash->nodes), NULL); \
 				if (UHASH_VCALL(user_t, v_node, is_inv, i)) break; \
 				node_index_ptr = UHASH_CALL_INT(user_t, rela_index, hash, idx_rela); \
-				*node_index_ptr = _uhash_idx_pub(i); \
+				idx_rela = *node_index_ptr = _uhash_idx_pub(i); \
 				node = UHASH_VCALL(user_t, v_node, get_by_ptr, &(hash->nodes), i); \
 				UHASH_CALL_INT(user_t, init_node, hash, node, key, value); \
 				break; \
@@ -341,7 +341,7 @@ static CC_FORCE_INLINE UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, U
 			UHASH_CALL_INT(user_t, update_depth, hash, *b); \
 		} \
 		UHASH_VCALL(user_t, v_idx, free, &branch); \
-		return *node_index_ptr; \
+		return idx_rela; \
 	}
 
 #endif /* HEADER_INCLUDED_UHASH_COMMON */
