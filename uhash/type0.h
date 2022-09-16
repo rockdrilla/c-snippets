@@ -17,9 +17,9 @@
 
 #define _UHASH_NAME_NODE__TYPE0(user_t, key_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
+		key_t        key; \
 		UHASH_IDX_T  left, right; \
 		int          depth; \
-		key_t        key; \
 	} UHASH_NAME(user_t, node);
 
 #define _UHASH_NAMEIMPL__TYPE0(user_t) \
@@ -69,7 +69,7 @@
 #define _UHASH_PROCIMPL_INIT__TYPE0(user_t) \
 	{ \
 	memset(hash, 0, sizeof(user_t)); \
-	UHASH_VCALL(user_t, v_node, init, &hash->nodes); \
+	UHASH_VCALL(user_t, v_node, init, &(hash->nodes)); \
 	}
 
 #define _UHASH_PROC_INIT__TYPE0(user_t) \
@@ -79,7 +79,7 @@
 
 #define _UHASH_PROCIMPL_FREE__TYPE0(user_t) \
 	{ \
-	UHASH_VCALL(user_t, v_node, free, &hash->nodes); \
+	UHASH_VCALL(user_t, v_node, free, &(hash->nodes)); \
 	memset(hash, 0, sizeof(user_t)); \
 	}
 

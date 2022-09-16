@@ -17,14 +17,14 @@
 
 #define _UHASH_NAME_NODE__TYPE2(user_t, key_t, value_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
-		UHASH_IDX_T  left, right; \
-		int          depth; \
 		key_t        key; \
+		UHASH_IDX_T  left, right; \
 		UHASH_IDX_T  value; \
+		int          depth; \
 	} UHASH_NAME(user_t, node);
 
 #define _UHASH_NAMEIMPL__TYPE2(user_t) \
-	UVECTOR_NAME(user_t, v_node)      nodes; \
+	UVECTOR_NAME(user_t, v_node)    nodes; \
 	UVECTOR_NAME(user_t, v_value)   values; \
 	UHASH_NAME(user_t, key_cmp)     key_comparator; \
 	UHASH_NAME(user_t, value_proc)  value_constructor; \
@@ -39,7 +39,7 @@
 #define _UHASH_PROC_VALUE__TYPE2(user_t, value_t) \
 	static CC_FORCE_INLINE const value_t * \
 	UHASH_PROC_INT(user_t, raw_value) (const user_t * hash, UHASH_IDX_T index) { \
-		return UHASH_VCALL(user_t, v_value, get_by_ptr, &hash->values, _uhash_idx_int(index)); \
+		return UHASH_VCALL(user_t, v_value, get_by_ptr, &(hash->values), _uhash_idx_int(index)); \
 	} \
 	\
 	static CC_FORCE_INLINE const value_t * \
@@ -57,28 +57,29 @@
 	static void \
 	UHASH_PROC_INT(user_t, set_value) (user_t * hash, UHASH_NAME(user_t, node) * node, value_t * value) { \
 		UHASH_IDX_T i; \
-		void * v ; \
+        value_t * v ; \
 		switch (node->value) { \
 		case 0: \
 			if (!value) break; \
-			i = UHASH_VCALL(user_t, v_value, append_by_ptr, &hash->values, value); \
+			i = UHASH_VCALL(user_t, v_value, append_by_ptr, &(hash->values), value); \
 			if (UHASH_VCALL(user_t, v_value, is_inv, i)) break; \
-			v = UHASH_VCALL(user_t, v_value, get_by_ptr, &hash->values, i); \
-			if (hash->value_constructor) \
-				hash->value_constructor(v); \
 			node->value = _uhash_idx_pub(i); \
+			if (hash->value_constructor) { \
+				v = UHASH_VCALL(user_t, v_value, get_by_ptr, &(hash->values), i); \
+				hash->value_constructor(v); \
+			} \
 			break; \
 		default: \
 			i = _uhash_idx_int(node->value); \
-			v = UHASH_VCALL(user_t, v_value, get_by_ptr, &hash->values, i); \
-			if (hash->value_destructor) \
-				hash->value_destructor(v); \
-			UHASH_VCALL(user_t, v_value, set_by_ptr, &hash->values, i, value); \
-			if (!value) \
+			v = UHASH_VCALL(user_t, v_value, get_by_ptr, &(hash->values), i); \
+			if (hash->value_destructor) hash->value_destructor(v); \
+			UHASH_VCALL(user_t, v_value, set_by_ptr, &(hash->values), i, value); \
+			if (!value) { \
 				node->value = 0; \
-			else \
-			if (hash->value_constructor) \
-				hash->value_constructor(v); \
+				break; \
+			} \
+			if (hash->value_constructor) hash->value_constructor(v); \
+			break; \
 		} \
 	} \
 	\
@@ -101,7 +102,7 @@
 #define _UHASH_PROCIMPL_INIT__TYPE2(user_t, value_t) \
 	{ \
 	_UHASH_PROCIMPL_INIT__TYPE0(user_t) \
-	UHASH_VCALL(user_t, v_value, init, &hash->values); \
+	UHASH_VCALL(user_t, v_value, init, &(hash->values)); \
 	}
 
 #define _UHASH_PROC_INIT__TYPE2(user_t, value_t) \
@@ -111,10 +112,12 @@
 
 #define _UHASH_PROCIMPL_FREE__TYPE2(user_t) \
 	{ \
-	if (hash->value_destructor) \
-		for (uint32_t i = 0; i < hash->values.used; i++) \
-			hash->value_destructor(UHASH_VCALL(user_t, v_value, get_by_ptr, &hash->values, i)); \
-	UHASH_VCALL(user_t, v_value, free, &hash->values); \
+	if (hash->value_destructor) { \
+		for (uint32_t i = 0; i < hash->values.used; i++) { \
+			hash->value_destructor(UHASH_VCALL(user_t, v_value, get_by_ptr, &(hash->values), i)); \
+		} \
+	} \
+	UHASH_VCALL(user_t, v_value, free, &(hash->values)); \
 	_UHASH_PROCIMPL_FREE__TYPE0(user_t) \
 	}
 

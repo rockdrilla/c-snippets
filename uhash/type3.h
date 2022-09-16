@@ -17,9 +17,10 @@
 
 #define _UHASH_NAME_NODE__TYPE3(user_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
+		UHASH_IDX_T  key; \
 		UHASH_IDX_T  left, right; \
+		UHASH_IDX_T  value; \
 		int          depth; \
-		UHASH_IDX_T  key, value; \
 	} UHASH_NAME(user_t, node);
 
 #define _UHASH_NAMEIMPL__TYPE3(user_t) \
@@ -35,7 +36,7 @@
 #define _UHASH_PROC_KEY__TYPE3(user_t, key_t) \
 	static CC_FORCE_INLINE const key_t * \
 	UHASH_PROC_INT(user_t, raw_key) (const user_t * hash, UHASH_IDX_T index) { \
-		return UHASH_VCALL(user_t, v_key, get_by_ptr, &hash->keys, _uhash_idx_int(index)); \
+		return UHASH_VCALL(user_t, v_key, get_by_ptr, &(hash->keys), _uhash_idx_int(index)); \
 	} \
 	\
 	static CC_FORCE_INLINE const key_t * \
@@ -56,15 +57,17 @@
 		switch (node->key) { \
 		case 0: \
 			if (!key) break; \
-			i = UHASH_VCALL(user_t, v_key, append_by_ptr, &hash->keys, key); \
+			i = UHASH_VCALL(user_t, v_key, append_by_ptr, &(hash->keys), key); \
 			if (UHASH_VCALL(user_t, v_key, is_inv, i)) break; \
 			node->key = _uhash_idx_pub(i); \
 			break; \
 		default: \
 			i = _uhash_idx_int(node->key); \
-			UHASH_VCALL(user_t, v_key, set_by_ptr, &hash->keys, i, key); \
-			if (!key) \
+			UHASH_VCALL(user_t, v_key, set_by_ptr, &(hash->keys), i, key); \
+			if (!key) { \
 				node->key = 0; \
+				break; \
+			} \
 		} \
 	} \
 	\
@@ -91,7 +94,7 @@
 #define _UHASH_PROCIMPL_INIT__TYPE3(user_t, key_t, value_t) \
 	{ \
 	_UHASH_PROCIMPL_INIT__TYPE2(user_t, value_t) \
-	UHASH_VCALL(user_t, v_key, init, &hash->keys); \
+	UHASH_VCALL(user_t, v_key, init, &(hash->keys)); \
 	}
 
 #define _UHASH_PROC_INIT__TYPE3(user_t, key_t, value_t) \
@@ -101,7 +104,7 @@
 
 #define _UHASH_PROCIMPL_FREE__TYPE3(user_t) \
 	{ \
-	UHASH_VCALL(user_t, v_key, free, &hash->keys); \
+	UHASH_VCALL(user_t, v_key, free, &(hash->keys)); \
 	_UHASH_PROCIMPL_FREE__TYPE2(user_t) \
 	}
 

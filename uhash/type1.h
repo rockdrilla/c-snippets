@@ -17,9 +17,9 @@
 
 #define _UHASH_NAME_NODE__TYPE1(user_t, key_t, value_t) \
 	typedef struct UHASH_NAME(user_t, node) { \
+		key_t        key; \
 		UHASH_IDX_T  left, right; \
 		int          depth; \
-		key_t        key; \
 		value_t      value; \
 	} UHASH_NAME(user_t, node);
 
