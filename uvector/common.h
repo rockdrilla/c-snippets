@@ -97,6 +97,7 @@
 		return ((index & UVECTOR_NAME(user_t, idx_mask_wfall)) != 0); \
 	}
 
+
 #define _UVECTOR_PROC__GROW(user_t, index_t) \
 	static int \
 	UVECTOR_PROC_INT(user_t, grow_by_bytes) (user_t * vector, size_t bytes) { \
@@ -140,6 +141,7 @@
 			return 0; \
 		return UVECTOR_CALL_INT(user_t, grow_by_count, vector, count); \
 	} \
+	\
 	static int \
 	UVECTOR_PROC(user_t, grow_auto) (user_t * vector) { \
 		if (vector->used < vector->allocated) \
