@@ -187,7 +187,7 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 	} \
 	\
 	static CC_FORCE_INLINE void \
-	UVECTOR_PROC_INT(user_t, set_by_ptr) (user_t * vector, index_t index, value_t * source) { \
+	UVECTOR_PROC_INT(user_t, set_by_ptr) (user_t * vector, index_t index, const value_t * source) { \
 		void * item = UVECTOR_CALL_INT(user_t, ptr_of, vector, index); \
 		if (source) \
 			(void) memcpy(item, source, UVECTOR_NAME(user_t, item_size)); \
@@ -196,7 +196,7 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 	} \
 	\
 	static int \
-	UVECTOR_PROC(user_t, set_by_ptr) (user_t * vector, index_t index, value_t * source) { \
+	UVECTOR_PROC(user_t, set_by_ptr) (user_t * vector, index_t index, const value_t * source) { \
 		if (index >= vector->used) \
 			return 0; \
 		UVECTOR_CALL_INT(user_t, set_by_ptr, vector, index, source); \
@@ -204,7 +204,7 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 	} \
 	\
 	static index_t \
-	UVECTOR_PROC(user_t, append_by_ptr) (user_t * vector, value_t * source) { \
+	UVECTOR_PROC(user_t, append_by_ptr) (user_t * vector, const value_t * source) { \
 		if (!UVECTOR_CALL(user_t, grow_auto, vector)) \
 			return UVECTOR_NAME(user_t, idx_inv); \
 		UVECTOR_CALL_INT(user_t, set_by_ptr, vector, vector->used, source); \
