@@ -116,8 +116,9 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 		if ((!nptr) || (!_new)) return 0; \
 		size_t _alloc = _new / UVECTOR_NAME(user_t, align_size); \
 		vector->allocated = (_alloc < UVECTOR_NAME(user_t, idx_max)) ? _alloc : UVECTOR_NAME(user_t, idx_max); \
+		if (vector->ptr == nptr) return 1; \
 		vector->ptr = nptr; \
-		return 1; \
+		return 2; \
 	} \
 	\
 	static int \
