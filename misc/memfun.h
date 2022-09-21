@@ -15,7 +15,6 @@
 
 #include "cc-inline.h"
 #include "../num/degree2.h"
-#include "../num/getmsb.h"
 #include "../num/popcnt.h"
 #include "../num/roundby.h"
 #include "../num/uadd.h"

@@ -12,6 +12,7 @@
 #include "../misc/cc-inline.h"
 #include "../misc/memfun.h"
 #include "../misc/kustom.h"
+#include "../num/getmsb.h"
 
 #define UVECTOR_NAME(t, k)  KUSTOM_NAME(uvector, t, k)
 #define UVECTOR_PROC        KUSTOM_PROC
