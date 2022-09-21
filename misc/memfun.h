@@ -155,6 +155,21 @@ static size_t memfun_calc_growth(size_t item_size)
 	return memfun_block_size();
 }
 
+#define MEMFUN_MACRO_CALC_GROWTH_EX(item_size, growth_factor) \
+	( ((item_size) > (memfun_block_default >> (growth_factor))) \
+	? ROUNDBY_MACRO((item_size) << (growth_factor), memfun_block_default) \
+	: memfun_block_default \
+	)
+
+static size_t memfun_calc_growth_ex(size_t item_size, unsigned char growth_factor)
+{
+	// waterfall
+	if (item_size > (memfun_block_size() >> growth_factor))
+		return memfun_block_align(item_size << growth_factor);
+
+	return memfun_block_size();
+}
+
 static int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_length)
 {
 	if (!extend) return 0;
