@@ -56,14 +56,9 @@
 
 #define _UHASH_PROC__INIT_NODE__TYPE0(user_t, key_t) \
 	static CC_FORCE_INLINE void \
-	UHASH_PROC_INT(user_t, init_node_real) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t key) { \
+	UHASH_PROC_INT(user_t, init_node) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t key, int value) { \
 		node->depth = 1; \
 		UHASH_CALL_INT(user_t, set_key, hash, node, key); \
-	} \
-	\
-	static CC_FORCE_INLINE void \
-	UHASH_PROC_INT(user_t, init_node) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t key, void * value) { \
-		UHASH_CALL_INT(user_t, init_node_real, hash, node, key); \
 	}
 
 #define _UHASH_PROCIMPL_INIT__TYPE0(user_t) \
@@ -97,13 +92,13 @@
 #define _UHASH_PROC_INSERT__TYPE0(user_t, key_t) \
 	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, key_t key) { \
-		void * value = NULL; \
+		const int value = 0; \
 		_UHASH_PROCIMPL_INSERT(user_t, 0) \
 	} \
 	\
 	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert_strict) (user_t * hash, key_t key) { \
-		void * value = NULL; \
+		const int value = 0; \
 		_UHASH_PROCIMPL_INSERT(user_t, 1) \
 	}
 
