@@ -27,16 +27,16 @@
 // #define MEMFUN_BLOCK          _MEMFUN_BLOCK_DEFAULT
 // #define MEMFUN_GROWTH_FACTOR  _MEMFUN_GROWTH_FACTOR_DEFAULT
 
-#ifndef MEMFUN_MALLOC_CLEAN
-#define MEMFUN_MALLOC_CLEAN 1
+#ifndef MEMFUN_MALLOC_DIRTY
+#define MEMFUN_MALLOC_DIRTY 1
 #endif
 
-#ifndef MEMFUN_REALLOC_CLEAN
-#define MEMFUN_REALLOC_CLEAN 1
+#ifndef MEMFUN_REALLOC_DIRTY
+#define MEMFUN_REALLOC_DIRTY 1
 #endif
 
-#ifndef MEMFUN_FREE_CLEAN
-#define MEMFUN_FREE_CLEAN 1
+#ifndef MEMFUN_FREE_SECURE
+#define MEMFUN_FREE_SECURE 1
 #endif
 
 #ifndef MEMFUN_MALLOC
@@ -212,7 +212,7 @@ static void * memfun_alloc_ex(size_t * length)
 	void * ptr = (MEMFUN_MALLOC(len));
 	if (!ptr) return NULL;
 
-#if MEMFUN_MALLOC_CLEAN
+#if MEMFUN_MALLOC_DIRTY
 	if (len) memset(ptr, 0, len);
 #endif
 
@@ -247,7 +247,7 @@ static void * _memfun_realloc(void * ptr, size_t _old, size_t _new)
 	void * nptr = (MEMFUN_REALLOC(ptr, _new));
 	if (!nptr) return ptr;
 
-#if MEMFUN_REALLOC_CLEAN
+#if MEMFUN_REALLOC_DIRTY
 	if (_new > _old) {
 		void * dirty = memfun_ptr_offset(nptr, _old);
 		if (dirty) memset(dirty, 0, _new - _old);
@@ -281,7 +281,7 @@ static void memfun_free(void * ptr, size_t length)
 {
 	if (!ptr) return;
 
-#if MEMFUN_FREE_CLEAN
+#if MEMFUN_FREE_SECURE
 	if (length) memset(ptr, 0, length);
 #endif
 
