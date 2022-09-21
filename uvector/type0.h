@@ -11,8 +11,7 @@
 
 #include "common.h"
 
-#define UVECTOR_DEFINE_TYPE0(user_t, index_t, value_t) \
-	_UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
+#define _UVECTOR_DEFINE_TYPE0_COMMON(user_t, index_t, value_t) \
 	_UVECTOR_DEFINE_TYPE(user_t, index_t, value_t) \
 	_UVECTOR_DEFINE_VISITOR_PROC(user_t, index_t, value_t) \
 	_UVECTOR_PROC__INDEX(user_t, index_t, value_t) \
@@ -22,5 +21,12 @@
 	_UVECTOR_PROC__BY_PTR(user_t, index_t, value_t) \
 	_UVECTOR_PROC__BY_VAL(user_t, index_t, value_t) \
 
+#define UVECTOR_DEFINE_TYPE0(user_t, index_t, value_t) \
+	_UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
+	_UVECTOR_DEFINE_TYPE0_COMMON(user_t, index_t, value_t) \
+
+#define UVECTOR_DEFINE_TYPE0_EX(user_t, index_t, value_t, growth_factor) \
+	_UVECTOR_DEFINE_CONSTANT_EX(user_t, index_t, value_t, growth_factor) \
+	_UVECTOR_DEFINE_TYPE0_COMMON(user_t, index_t, value_t) \
 
 #endif /* HEADER_INCLUDED_UVECTOR_TYPE0 */

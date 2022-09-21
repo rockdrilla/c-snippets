@@ -19,10 +19,9 @@
 #define UVECTOR_PROC_INT    KUSTOM_PROC_INT
 #define UVECTOR_CALL_INT    KUSTOM_CALL_INT
 
-#define _UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
+#define _UVECTOR_DEFINE_CONSTANT_COMMON(user_t, index_t, value_t) \
 	static const size_t UVECTOR_NAME(user_t, item_size)  = sizeof(value_t); \
 	static const size_t UVECTOR_NAME(user_t, align_size) = MEMFUN_MACRO_ALIGN(UVECTOR_NAME(user_t, item_size)); \
-	static const size_t UVECTOR_NAME(user_t, growth)     = MEMFUN_MACRO_CALC_GROWTH(UVECTOR_NAME(user_t, align_size)); \
 	static const int    UVECTOR_NAME(user_t, align_bits) = GETMSB_MACRO32(UVECTOR_NAME(user_t, item_size)); \
 	\
 	static const int     UVECTOR_NAME(user_t, idx_bits_r) = sizeof(index_t) * CHAR_BIT; \
@@ -35,6 +34,14 @@
 	\
 	static const index_t UVECTOR_NAME(user_t, idx_mask_inv)   = UVECTOR_NAME(user_t, idx_max_r) & ~(UVECTOR_NAME(user_t, idx_max)); \
 	static const index_t UVECTOR_NAME(user_t, idx_mask_wfall) = UVECTOR_NAME(user_t, idx_max)   & ~(UVECTOR_NAME(user_t, idx_max_safe)); \
+
+#define _UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
+	_UVECTOR_DEFINE_CONSTANT_COMMON(user_t, index_t, value_t) \
+	static const size_t UVECTOR_NAME(user_t, growth) = MEMFUN_MACRO_CALC_GROWTH(UVECTOR_NAME(user_t, align_size)); \
+
+#define _UVECTOR_DEFINE_CONSTANT_EX(user_t, index_t, value_t, growth_factor) \
+	_UVECTOR_DEFINE_CONSTANT_COMMON(user_t, index_t, value_t) \
+	static const size_t UVECTOR_NAME(user_t, growth) = MEMFUN_MACRO_CALC_GROWTH_EX(UVECTOR_NAME(user_t, align_size), growth_factor); \
 
 #define _UVECTOR_DEFINE_TYPE(user_t, index_t, value_t) \
 	typedef struct { \
