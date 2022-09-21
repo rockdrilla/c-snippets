@@ -55,7 +55,7 @@
 	} \
 	\
 	static void \
-	UHASH_PROC_INT(user_t, set_value) (user_t * hash, UHASH_NAME(user_t, node) * node, value_t * value) { \
+	UHASH_PROC_INT(user_t, set_value) (user_t * hash, UHASH_NAME(user_t, node) * node, const value_t * value) { \
 		UHASH_IDX_T i; \
         value_t * v ; \
 		switch (node->value) { \
@@ -84,7 +84,7 @@
 	} \
 	\
 	static void \
-	UHASH_PROC(user_t, set_value) (user_t * hash, UHASH_IDX_T node_index, value_t * value) { \
+	UHASH_PROC(user_t, set_value) (user_t * hash, UHASH_IDX_T node_index, const value_t * value) { \
 		UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, node, hash, node_index); \
 		if (!node) return; \
 		UHASH_CALL_INT(user_t, set_value, hash, node, value); \
@@ -93,7 +93,7 @@
 
 #define _UHASH_PROC__INIT_NODE__TYPE2(user_t, key_t, value_t) \
 	static CC_FORCE_INLINE void \
-	UHASH_PROC_INT(user_t, init_node) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t key, value_t * value) { \
+	UHASH_PROC_INT(user_t, init_node) (user_t * hash, UHASH_NAME(user_t, node) * node, key_t key, const value_t * value) { \
 		node->depth = 1; \
 		UHASH_CALL_INT(user_t, set_key, hash, node, key); \
 		UHASH_CALL_INT(user_t, set_value, hash, node, value); \
@@ -132,11 +132,11 @@
 
 #define _UHASH_PROC_INSERT__TYPE2(user_t, key_t, value_t) \
 	static UHASH_IDX_T \
-	UHASH_PROC(user_t, insert) (user_t * hash, key_t key, value_t * value) \
+	UHASH_PROC(user_t, insert) (user_t * hash, key_t key, const value_t * value) \
 		_UHASH_PROCIMPL_INSERT(user_t, 0) \
 	\
 	static UHASH_IDX_T \
-	UHASH_PROC(user_t, insert_strict) (user_t * hash, key_t key, value_t * value) \
+	UHASH_PROC(user_t, insert_strict) (user_t * hash, key_t key, const value_t * value) \
 		_UHASH_PROCIMPL_INSERT(user_t, 1)
 
 
