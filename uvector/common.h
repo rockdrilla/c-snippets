@@ -83,6 +83,23 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 	UVECTOR_PROC(user_t, free) (user_t * vector) { \
 		memfun_free(vector->ptr, UVECTOR_CALL(user_t, offset_of, vector->used)); \
 		(void) memset(vector, 0, sizeof(user_t)); \
+	} \
+	\
+	static void \
+	UVECTOR_PROC(user_t, dup) (user_t * destination, const user_t * source) { \
+		UVECTOR_CALL(user_t, init_ex, destination, source->used); \
+		(void) memcpy(destination->ptr, source->ptr, UVECTOR_CALL(user_t, offset_of, source->used)); \
+		destination->used = source->used; \
+	} \
+	\
+	static index_t \
+	UVECTOR_PROC(user_t, copy_range) (user_t * destination, const user_t * source, index_t begin, index_t count) { \
+		if (begin >= source->used) return 0; \
+		index_t end = begin + count; \
+		if (end > source->used) count = source->used - begin; \
+		UVECTOR_CALL(user_t, init_ex, destination, count); \
+		(void) memcpy(destination->ptr, UVECTOR_CALL_INT(user_t, ptr_of, source, begin), UVECTOR_CALL(user_t, offset_of, count)); \
+		return destination->used = count; \
 	}
 
 
