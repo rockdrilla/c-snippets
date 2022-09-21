@@ -98,7 +98,13 @@
 	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, key_t key) { \
 		void * value = NULL; \
-		_UHASH_PROCIMPL_INSERT(user_t) \
+		_UHASH_PROCIMPL_INSERT(user_t, 0) \
+	} \
+	\
+	static UHASH_IDX_T \
+	UHASH_PROC(user_t, insert_strict) (user_t * hash, key_t key) { \
+		void * value = NULL; \
+		_UHASH_PROCIMPL_INSERT(user_t, 1) \
 	}
 
 

@@ -298,7 +298,7 @@ static CC_FORCE_INLINE UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, U
 		return 0; \
 	}
 
-#define _UHASH_PROCIMPL_INSERT(user_t) \
+#define _UHASH_PROCIMPL_INSERT(user_t, strict) \
 	{ \
 		if (hash->nodes.used == _uhash_idx_t_max) \
 			return 0; \
@@ -323,7 +323,7 @@ static CC_FORCE_INLINE UHASH_IDX_T uhash_node_rela_index(UHASH_IDX_T selector, U
 			cmp = hash->key_comparator(key, UHASH_CALL_INT(user_t, key, hash, node)); \
 			if (cmp == 0) { \
 				UHASH_VCALL(user_t, v_idx, free, &branch); \
-				return *node_index_ptr; \
+				return (strict) ? 0 : *node_index_ptr; \
 			} \
 			UHASH_VCALL(user_t, v_idx, append_by_val, &branch, idx_rela); \
 			if (cmp > 0) { \

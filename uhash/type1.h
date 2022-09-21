@@ -78,7 +78,11 @@
 #define _UHASH_PROC_INSERT__TYPE1(user_t, key_t, value_t) \
 	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, key_t key, value_t value) \
-		_UHASH_PROCIMPL_INSERT(user_t)
+		_UHASH_PROCIMPL_INSERT(user_t, 0) \
+	\
+	static UHASH_IDX_T \
+	UHASH_PROC(user_t, insert_strict) (user_t * hash, key_t key, value_t value) \
+		_UHASH_PROCIMPL_INSERT(user_t, 1)
 
 
 #define UHASH_DEFINE_TYPE1(user_t, key_t, value_t) \
