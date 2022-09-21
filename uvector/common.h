@@ -19,21 +19,23 @@
 #define UVECTOR_PROC_INT    KUSTOM_PROC_INT
 #define UVECTOR_CALL_INT    KUSTOM_CALL_INT
 
+static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
+
 #define _UVECTOR_DEFINE_CONSTANT_COMMON(user_t, index_t, value_t) \
+	static const int     UVECTOR_NAME(user_t, r_idx_bits) = sizeof(index_t) * CHAR_BIT; \
+	static const index_t UVECTOR_NAME(user_t, r_idx_max)  = ~((index_t) 0); \
+	\
 	static const size_t UVECTOR_NAME(user_t, item_size)  = sizeof(value_t); \
-	static const size_t UVECTOR_NAME(user_t, align_size) = MEMFUN_MACRO_ALIGN(UVECTOR_NAME(user_t, item_size)); \
-	static const int    UVECTOR_NAME(user_t, align_bits) = GETMSB_MACRO32(UVECTOR_NAME(user_t, item_size)); \
+	static const size_t UVECTOR_NAME(user_t, align_size) = (sizeof(value_t)) ? MEMFUN_MACRO_ALIGN(sizeof(value_t)) : 1; \
 	\
-	static const int     UVECTOR_NAME(user_t, idx_bits_r) = sizeof(index_t) * CHAR_BIT; \
-	static const index_t UVECTOR_NAME(user_t, idx_max_r)  = ~((index_t) 0); \
+	static const int UVECTOR_NAME(user_t, align_bits) = GETMSB_MACRO32(UVECTOR_NAME(user_t, align_size)); \
+	static const int UVECTOR_NAME(user_t, fence_bits) = (UVECTOR_NAME(user_t, r_idx_bits) < UVECTOR_NAME(ptr, bits)) ? 1 : UVECTOR_NAME(user_t, align_bits); \
 	\
-	static const int     UVECTOR_NAME(user_t, idx_bits)     = UVECTOR_NAME(user_t, idx_bits_r) - UVECTOR_NAME(user_t, align_bits); \
-	static const index_t UVECTOR_NAME(user_t, idx_max)      = UVECTOR_NAME(user_t, idx_max_r) >> UVECTOR_NAME(user_t, align_bits); \
-	static const index_t UVECTOR_NAME(user_t, idx_inv)      = UVECTOR_NAME(user_t, idx_max_r); \
-	static const index_t UVECTOR_NAME(user_t, idx_max_safe) = UVECTOR_NAME(user_t, idx_max) >> 1; \
+	static const index_t UVECTOR_NAME(user_t, idx_inv) = UVECTOR_NAME(user_t, r_idx_max); \
+	static const index_t UVECTOR_NAME(user_t, idx_max) = UVECTOR_NAME(user_t, r_idx_max) >> UVECTOR_NAME(user_t, fence_bits); \
 	\
-	static const index_t UVECTOR_NAME(user_t, idx_mask_inv)   = UVECTOR_NAME(user_t, idx_max_r) & ~(UVECTOR_NAME(user_t, idx_max)); \
-	static const index_t UVECTOR_NAME(user_t, idx_mask_wfall) = UVECTOR_NAME(user_t, idx_max)   & ~(UVECTOR_NAME(user_t, idx_max_safe)); \
+	static const int UVECTOR_NAME(user_t, idx_bits)   = UVECTOR_NAME(user_t, r_idx_bits) - UVECTOR_NAME(user_t, fence_bits); \
+	static const int UVECTOR_NAME(user_t, wfall_bits) = UVECTOR_NAME(user_t, idx_bits) - 1; \
 
 #define _UVECTOR_DEFINE_CONSTANT(user_t, index_t, value_t) \
 	_UVECTOR_DEFINE_CONSTANT_COMMON(user_t, index_t, value_t) \
@@ -96,12 +98,12 @@
 	\
 	static CC_FORCE_INLINE int \
 	UVECTOR_PROC(user_t, is_inv) (index_t index) { \
-		return ((index & UVECTOR_NAME(user_t, idx_mask_inv)) != 0); \
+		return ((index >> UVECTOR_NAME(user_t, idx_bits)) != 0); \
 	} \
 	\
 	static CC_FORCE_INLINE int \
 	UVECTOR_PROC_INT(user_t, is_wfall) (index_t index) { \
-		return ((index & UVECTOR_NAME(user_t, idx_mask_wfall)) != 0); \
+		return ((index >> UVECTOR_NAME(user_t, wfall_bits)) != 0); \
 	}
 
 
@@ -142,7 +144,7 @@
 	static int \
 	UVECTOR_PROC(user_t, grow_by_count) (user_t * vector, index_t count) { \
 		if (!count) return 0; \
-		if (count >= UVECTOR_NAME(user_t, idx_max_safe)) \
+		if (UVECTOR_CALL_INT(user_t, is_wfall, count)) \
 			return 0; \
 		if (vector->allocated >= UVECTOR_NAME(user_t, idx_max)) \
 			return 0; \
