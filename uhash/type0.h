@@ -100,6 +100,12 @@
 	UHASH_PROC(user_t, insert_strict) (user_t * hash, key_t key) { \
 		const int value = 0; \
 		_UHASH_PROCIMPL_INSERT(user_t, 1) \
+	} \
+	\
+	static UHASH_IDX_T \
+	UHASH_PROC(user_t, insert_ex) (user_t * hash, key_t key, int strict) { \
+		const int value = 0; \
+		_UHASH_PROCIMPL_INSERT(user_t, strict) \
 	}
 
 

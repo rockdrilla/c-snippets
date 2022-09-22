@@ -126,7 +126,11 @@
 	\
 	static UHASH_IDX_T \
 	UHASH_PROC(user_t, insert_strict) (user_t * hash, const key_t * key, const value_t * value) \
-		_UHASH_PROCIMPL_INSERT(user_t, 1)
+		_UHASH_PROCIMPL_INSERT(user_t, 1) \
+	\
+	static UHASH_IDX_T \
+	UHASH_PROC(user_t, insert_ex) (user_t * hash, const key_t * key, const value_t * value, int strict) \
+		_UHASH_PROCIMPL_INSERT(user_t, strict)
 
 
 #define UHASH_DEFINE_TYPE3(user_t, key_t, value_t) \
