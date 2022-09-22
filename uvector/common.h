@@ -85,11 +85,13 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 		(void) memset(vector, 0, sizeof(user_t)); \
 	} \
 	\
-	static void \
+	static int \
 	UVECTOR_PROC(user_t, dup) (user_t * destination, const user_t * source) { \
-		UVECTOR_CALL(user_t, init_ex, destination, source->used); \
+		if (!UVECTOR_CALL(user_t, init_ex, destination, source->used)) \
+			return 0; \
 		(void) memcpy(destination->ptr, source->ptr, UVECTOR_CALL(user_t, offset_of, source->used)); \
 		destination->used = source->used; \
+		return 1; \
 	} \
 	\
 	static index_t \
@@ -214,17 +216,21 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 
 #define _UVECTOR_PROC__BY_VAL(user_t, index_t, value_t) \
 	static CC_FORCE_INLINE value_t \
-	UVECTOR_PROC_INT(user_t, get_by_val) (user_t * vector, index_t index) { \
+	UVECTOR_PROC_INT(user_t, get_by_val) (const user_t * vector, index_t index) { \
 		value_t * item = UVECTOR_CALL_INT(user_t, ptr_of, vector, index); \
 		return *item; \
 	} \
 	\
 	static value_t \
-	UVECTOR_PROC(user_t, get_by_val) (user_t * vector, index_t index) { \
+	UVECTOR_PROC(user_t, get_by_val) (const user_t * vector, index_t index) { \
 		if (index >= vector->used) { \
-			UVECTOR_NAME(user_t, val_t) default_value; \
-			(void) memset(&default_value, 0, UVECTOR_NAME(user_t, align_size)); \
-			return default_value._.dummy; \
+			static value_t default_value; \
+			static int default_init = 0; \
+			if (!default_init) { \
+				(void) memset(&default_value, 0, sizeof(value_t)); \
+				default_init = 1; \
+			} \
+			return default_value; \
 		} \
 		return UVECTOR_CALL_INT(user_t, get_by_val, vector, index); \
 	} \
