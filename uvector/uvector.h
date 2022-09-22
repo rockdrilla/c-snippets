@@ -13,5 +13,6 @@
 #include "common.h"
 #include "type0.h"
 #include "type1.h"
+#include "str.h"
 
 #endif /* HEADER_INCLUDED_UVECTOR */
