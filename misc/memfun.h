@@ -51,7 +51,8 @@
 #define MEMFUN_FREE(ptr) free(ptr)
 #endif
 
-static size_t memfun_page_size(void)
+static
+size_t memfun_page_size(void)
 {
 	static size_t x = 0;
 	if (x) return x;
@@ -71,11 +72,12 @@ static const size_t memfun_block_default
 ? _MEMFUN_BLOCK_DEFAULT
 : ((POPCNT_MACRO64(MEMFUN_BLOCK) == 1) ? (MEMFUN_BLOCK) : DEGREE2_NEXT_MACRO64(MEMFUN_BLOCK));
 #else /* ! MEMFUN_BLOCK */
-static const size_t memfun_block_default 
+static const size_t memfun_block_default
 = _MEMFUN_BLOCK_DEFAULT;
 #endif /* MEMFUN_BLOCK */
 
-static size_t memfun_block_size(void)
+static
+size_t memfun_block_size(void)
 {
 	static size_t x = 0;
 	if (x) return x;
@@ -100,7 +102,8 @@ static const unsigned int memfun_growth_factor
 #define _MEMFUN_N2D_DUMB(x) \
 	( ((x)<<1) & ~((x)|((x)>>1)|((x)>>2)|((x)>>3)|((x)>>4)|((x)>>5)) )
 
-static CC_FORCE_INLINE size_t _memfun_n2d_dumb(size_t x)
+static CC_FORCE_INLINE
+size_t _memfun_n2d_dumb(size_t x)
 {
 	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5));
 }
@@ -115,7 +118,8 @@ static CC_FORCE_INLINE size_t _memfun_n2d_dumb(size_t x)
 	) )
 // ^- using _MEMFUN_N2D_DUMB instead of DEGREE2_NEXT_MACRO64 due to value "knowledge"
 
-static size_t memfun_align(size_t length)
+static
+size_t memfun_align(size_t length)
 {
 	if (!length) return 0;
 
@@ -129,7 +133,8 @@ static size_t memfun_align(size_t length)
 	return _memfun_n2d_dumb(length);
 }
 
-static CC_FORCE_INLINE size_t memfun_block_align(size_t length)
+static CC_FORCE_INLINE
+size_t memfun_block_align(size_t length)
 {
 	if (!length) return 0;
 
@@ -142,7 +147,8 @@ static CC_FORCE_INLINE size_t memfun_block_align(size_t length)
 	: memfun_block_default \
 	)
 
-static size_t memfun_calc_growth(size_t item_size)
+static
+size_t memfun_calc_growth(size_t item_size)
 {
 	// waterfall
 	static size_t x = 0;
@@ -160,7 +166,8 @@ static size_t memfun_calc_growth(size_t item_size)
 	: memfun_block_default \
 	)
 
-static size_t memfun_calc_growth_ex(size_t item_size, unsigned char growth_factor)
+static
+size_t memfun_calc_growth_ex(size_t item_size, unsigned char growth_factor)
 {
 	// waterfall
 	if (item_size > (memfun_block_size() >> growth_factor))
@@ -169,7 +176,8 @@ static size_t memfun_calc_growth_ex(size_t item_size, unsigned char growth_facto
 	return memfun_block_size();
 }
 
-static int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_length)
+static
+int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_length)
 {
 	if (!extend) return 0;
 
@@ -183,7 +191,8 @@ static int memfun_want_realloc_raw(size_t length, size_t extend, size_t * new_le
 	return 1;
 }
 
-static int memfun_want_realloc(size_t length, size_t extend, size_t * new_length)
+static
+int memfun_want_realloc(size_t length, size_t extend, size_t * new_length)
 {
 	if (!extend) return 0;
 
@@ -204,7 +213,8 @@ static int memfun_want_realloc(size_t length, size_t extend, size_t * new_length
 	return 1;
 }
 
-static void * memfun_alloc_ex(size_t * length)
+static
+void * memfun_alloc_ex(size_t * length)
 {
 	if (!length) return NULL;
 
@@ -220,13 +230,15 @@ static void * memfun_alloc_ex(size_t * length)
 	return ptr;
 }
 
-static CC_FORCE_INLINE void * memfun_alloc(size_t length)
+static CC_FORCE_INLINE
+void * memfun_alloc(size_t length)
 {
 	size_t len = length;
 	return memfun_alloc_ex(&len);
 }
 
-static void * memfun_ptr_offset(void * ptr, size_t offset)
+static
+void * memfun_ptr_offset(void * ptr, size_t offset)
 {
 	void * nptr = NULL;
 	if (!uaddl((size_t) ptr, offset, (size_t *) &nptr))
@@ -234,7 +246,8 @@ static void * memfun_ptr_offset(void * ptr, size_t offset)
 	return nptr;
 }
 
-static void * memfun_ptr_offset_ex(void * ptr, size_t item_size, size_t item_count)
+static
+void * memfun_ptr_offset_ex(void * ptr, size_t item_size, size_t item_count)
 {
 	size_t _off;
 	if (!umull(item_size, item_count, &_off))
@@ -242,7 +255,8 @@ static void * memfun_ptr_offset_ex(void * ptr, size_t item_size, size_t item_cou
 	return memfun_ptr_offset(ptr, _off);
 }
 
-static void * _memfun_realloc(void * ptr, size_t _old, size_t _new)
+static
+void * _memfun_realloc(void * ptr, size_t _old, size_t _new)
 {
 	void * nptr = (MEMFUN_REALLOC(ptr, _new));
 	if (!nptr) return ptr;
@@ -257,7 +271,8 @@ static void * _memfun_realloc(void * ptr, size_t _old, size_t _new)
 	return nptr;
 }
 
-static void * memfun_realloc_ex(void * ptr, size_t * length, size_t extend)
+static
+void * memfun_realloc_ex(void * ptr, size_t * length, size_t extend)
 {
 	if (!length) return ptr;
 
@@ -271,13 +286,15 @@ static void * memfun_realloc_ex(void * ptr, size_t * length, size_t extend)
 	return _memfun_realloc(ptr, _old, _new);
 }
 
-static CC_FORCE_INLINE void * memfun_realloc(void * ptr, size_t length, size_t extend)
+static CC_FORCE_INLINE
+void * memfun_realloc(void * ptr, size_t length, size_t extend)
 {
 	size_t old = length;
 	return memfun_realloc_ex(ptr, &old, extend);
 }
 
-static void memfun_free(void * ptr, size_t length)
+static
+void memfun_free(void * ptr, size_t length)
 {
 	if (!ptr) return;
 

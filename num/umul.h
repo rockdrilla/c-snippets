@@ -30,7 +30,8 @@
 // TODO: write fair enough fallback version
 
 #define _UMUL_DEFINE_FUNC(n, t) \
-	static int umul ## n (t a, t b, t * r) { \
+	static \
+	int umul ## n (t a, t b, t * r) { \
 		t res = a * b; \
 		if (a > b) { \
 			if (res < a) return 0; \

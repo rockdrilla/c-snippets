@@ -27,7 +27,8 @@
 #define SET_LOWER_MACRO64(v)  ( (((v) & ULLONG_MAX) == 0) ? 0 : _SETLOWER64(v) )
 
 #define _SETLOWER_DEFINE_FUNC(n, t) \
-	static t set_lower ## n (t v) { \
+	static \
+	t set_lower ## n (t v) { \
 		if (v == 0) return 0; \
 		t a = v | (v - 1) | (v >> 1); \
 		t b = v << 1; \

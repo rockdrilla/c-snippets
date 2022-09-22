@@ -17,7 +17,8 @@
 #define DEGREE2_CURR_MACRO64(v)  ( (((v) & ULLONG_MAX) == 0) ? 0 : _DEGREE2_CURR64(v) )
 
 #define _DEGREE2_CURR_FUNC(n, t) \
-	static t degree2_curr ## n (t v) { \
+	static \
+	t degree2_curr ## n (t v) { \
 		if (v == 0) return 0; \
 		t r, x = set_lower ## n (v >> 1); \
 		return (uadd ## n (x, 1, &r)) ? r : 0; \
@@ -33,7 +34,8 @@ _DEGREE2_CURR_FUNC(ll, unsigned long long)
 #define DEGREE2_NEXT_MACRO64(v)  ( (((v) & ULLONG_MAX) == 0) ? 1 : _DEGREE2_NEXT64(v) )
 
 #define _DEGREE2_NEXT_FUNC(n, t) \
-	static t degree2_next ## n (t v) { \
+	static \
+	t degree2_next ## n (t v) { \
 		if (v == 0) return 1; \
 		t r, x = set_lower ## n (v); \
 		return (uadd ## n (x, 1, &r)) ? r : 0; \

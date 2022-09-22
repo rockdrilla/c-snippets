@@ -55,7 +55,10 @@ static int popcntl(unsigned long x);
 static int popcntll(unsigned long long x);
 
 #define _POPCNT_BITHACKS(n)             popcnt_bithacks ## n
-#define _POPCNT_DECLARE_BITHACKS(n, t)  static CC_FORCE_INLINE int _POPCNT_BITHACKS(n) (t x)
+#define _POPCNT_DECLARE_BITHACKS(n, t) \
+	static CC_FORCE_INLINE \
+	int \
+	_POPCNT_BITHACKS(n) (t x)
 
 _POPCNT_DECLARE_BITHACKS(,   unsigned int);
 _POPCNT_DECLARE_BITHACKS(l,  unsigned long);
@@ -69,7 +72,8 @@ _POPCNT_DECLARE_BITHACKS(ll, unsigned long long);
 
 static int _popcnt_builtin = _POPCNT_BUILTIN_NONE;
 
-static int _popcnt_cpu_supports(void)
+static
+int _popcnt_cpu_supports(void)
 {
 	/* ref:
 	 * - https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
@@ -97,7 +101,8 @@ static int _popcnt_cpu_supports(void)
 #endif /* _POPCNT_USE_BUILTIN */
 
 #define _POPCNT_DEFINE_FUNC(n, t) \
-	static int popcnt ## n (t x) { \
+	static \
+	int popcnt ## n (t x) { \
 		_POPCNT_TRY_BUILTIN(__builtin_popcount ## n) \
 		return _POPCNT_BITHACKS(n) (x); \
 	}

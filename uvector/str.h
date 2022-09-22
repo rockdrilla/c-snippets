@@ -20,14 +20,16 @@ typedef struct {
 } string_v;
 
 static
-void UVECTOR_PROC(string_v, init) (string_v * vector)
+void
+UVECTOR_PROC(string_v, init) (string_v * vector)
 {
 	(void) memset(vector, 0, sizeof(string_v));
 	UVECTOR_CALL(ptroff_v, init, &(vector->offsets));
 }
 
 static
-void UVECTOR_PROC(string_v, free) (string_v * vector)
+void
+UVECTOR_PROC(string_v, free) (string_v * vector)
 {
 	UVECTOR_CALL(ptroff_v, free, &(vector->offsets));
 	memfun_free(vector->ptr, vector->used);
@@ -35,7 +37,8 @@ void UVECTOR_PROC(string_v, free) (string_v * vector)
 }
 
 static
-int UVECTOR_PROC(string_v, dup) (string_v * destination, const string_v * source)
+int
+UVECTOR_PROC(string_v, dup) (string_v * destination, const string_v * source)
 {
 	UVECTOR_CALL(string_v, init, destination);
 	destination->ptr = memfun_alloc(source->used);
@@ -54,13 +57,15 @@ int UVECTOR_PROC(string_v, dup) (string_v * destination, const string_v * source
 }
 
 static CC_FORCE_INLINE
-uint32_t UVECTOR_PROC(string_v, count) (const string_v * vector)
+uint32_t
+UVECTOR_PROC(string_v, count) (const string_v * vector)
 {
 	return vector->offsets.used;
 }
 
 static
-char * UVECTOR_PROC(string_v, get) (const string_v * vector, uint32_t index)
+const char *
+UVECTOR_PROC(string_v, get) (const string_v * vector, uint32_t index)
 {
 	if (index >= vector->offsets.used) return NULL;
 
@@ -68,7 +73,8 @@ char * UVECTOR_PROC(string_v, get) (const string_v * vector, uint32_t index)
 }
 
 static
-uint32_t UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * string, uint32_t length)
+uint32_t
+UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * string, uint32_t length)
 {
 	size_t new_used = roundbyl(vector->used + length + 1, sizeof(size_t));
 	if (new_used > vector->allocated) {
@@ -89,13 +95,15 @@ uint32_t UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * s
 }
 
 static CC_FORCE_INLINE
-uint32_t UVECTOR_PROC(string_v, append) (string_v * vector, const char * string)
+uint32_t
+UVECTOR_PROC(string_v, append) (string_v * vector, const char * string)
 {
 	return UVECTOR_CALL(string_v, append_fixed, vector, string, (string) ? strlen(string) : 0);
 }
 
 static
-uint32_t UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * source, uint32_t begin, uint32_t count) {
+uint32_t
+UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * source, uint32_t begin, uint32_t count) {
 	if (begin >= source->offsets.used) return 0;
 
 	uint32_t end = begin + count;

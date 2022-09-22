@@ -24,7 +24,8 @@
 	) )
 
 #define _ROUNDBY_DEFINE_FUNC(n, t) \
-	static int roundby ## n (t value, t align) { \
+	static \
+	int roundby ## n (t value, t align) { \
 		if (align < 2) return value; \
         t r, x; \
 		r = (popcnt ## n (align) == 1) ? (value & (align - 1)) : (value % align); \

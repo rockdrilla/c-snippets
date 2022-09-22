@@ -30,7 +30,8 @@
 // TODO: write fair enough fallback version
 
 #define _UADD_DEFINE_FUNC(n, t) \
-	static int uadd ## n (t a, t b, t * r) { \
+	static \
+	int uadd ## n (t a, t b, t * r) { \
 		t res = a + b; \
 		if (a > b) { \
 			if (res < a) return 0; \

@@ -34,24 +34,28 @@
 
 
 #define _UHASH_PROC_KEY__TYPE3(user_t, key_t) \
-	static CC_FORCE_INLINE const key_t * \
+	static CC_FORCE_INLINE \
+	const key_t * \
 	UHASH_PROC_INT(user_t, raw_key) (const user_t * hash, UHASH_IDX_T index) { \
 		return UHASH_VCALL(user_t, v_key, get_by_ptr, &(hash->keys), _uhash_idx_int(index)); \
 	} \
 	\
-	static CC_FORCE_INLINE const key_t * \
+	static CC_FORCE_INLINE \
+	const key_t * \
 	UHASH_PROC_INT(user_t, key) (const user_t * hash, const UHASH_NAME(user_t, node) * node) { \
 		return (node->key) ? UHASH_CALL_INT(user_t, raw_key, hash, node->key) : NULL; \
 	} \
 	\
-	static const key_t * \
+	static \
+	const key_t * \
 	UHASH_PROC(user_t, key) (const user_t * hash, UHASH_IDX_T node_index) { \
 		const UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, cnode, hash, node_index); \
 		if (!node) return NULL; \
 		return UHASH_CALL_INT(user_t, key, hash, node); \
 	} \
 	\
-	static void \
+	static \
+	void \
 	UHASH_PROC_INT(user_t, set_key) (user_t * hash, UHASH_NAME(user_t, node) * node, const key_t * key) { \
 		UHASH_IDX_T i; \
 		switch (node->key) { \
@@ -71,7 +75,8 @@
 		} \
 	} \
 	\
-	static void \
+	static \
+	void \
 	UHASH_PROC(user_t, set_key) (user_t * hash, UHASH_IDX_T node_index, const key_t * key) { \
 		UHASH_NAME(user_t, node) * node = UHASH_CALL(user_t, node, hash, node_index); \
 		if (!node) return; \
@@ -84,7 +89,8 @@
 
 
 #define _UHASH_PROC__INIT_NODE__TYPE3(user_t, key_t, value_t) \
-	static CC_FORCE_INLINE void \
+	static CC_FORCE_INLINE \
+	void \
 	UHASH_PROC_INT(user_t, init_node) (user_t * hash, UHASH_NAME(user_t, node) * node, const key_t * key, const value_t * value) { \
 		node->depth = 1; \
 		UHASH_CALL_INT(user_t, set_key, hash, node, key); \
@@ -98,7 +104,8 @@
 	}
 
 #define _UHASH_PROC_INIT__TYPE3(user_t, key_t, value_t) \
-	static void \
+	static \
+	void \
 	UHASH_PROC(user_t, init) (user_t * hash) \
 		_UHASH_PROCIMPL_INIT__TYPE3(user_t, key_t, value_t)
 
@@ -109,26 +116,31 @@
 	}
 
 #define _UHASH_PROC_FREE__TYPE3(user_t) \
-	static void \
+	static \
+	void \
 	UHASH_PROC(user_t, free) (user_t * hash) \
 		_UHASH_PROCIMPL_FREE__TYPE3(user_t)
 
 
 #define _UHASH_PROC_SEARCH__TYPE3(user_t, key_t) \
-	static UHASH_IDX_T \
+	static \
+	UHASH_IDX_T \
 	UHASH_PROC(user_t, search) (user_t * hash, key_t * key) \
 		_UHASH_PROCIMPL_SEARCH(user_t)
 
 #define _UHASH_PROC_INSERT__TYPE3(user_t, key_t, value_t) \
-	static UHASH_IDX_T \
+	static \
+	UHASH_IDX_T \
 	UHASH_PROC(user_t, insert) (user_t * hash, const key_t * key, const value_t * value) \
 		_UHASH_PROCIMPL_INSERT(user_t, 0) \
 	\
-	static UHASH_IDX_T \
+	static \
+	UHASH_IDX_T \
 	UHASH_PROC(user_t, insert_strict) (user_t * hash, const key_t * key, const value_t * value) \
 		_UHASH_PROCIMPL_INSERT(user_t, 1) \
 	\
-	static UHASH_IDX_T \
+	static \
+	UHASH_IDX_T \
 	UHASH_PROC(user_t, insert_ex) (user_t * hash, const key_t * key, const value_t * value, int strict) \
 		_UHASH_PROCIMPL_INSERT(user_t, strict)
 
