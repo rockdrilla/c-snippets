@@ -65,11 +65,18 @@ UVECTOR_PROC(string_v, count) (const string_v * vector)
 
 static
 const char *
+UVECTOR_PROC_INT(string_v, get) (const string_v * vector, uint32_t index)
+{
+	return memfun_ptr_offset(vector->ptr, UVECTOR_CALL(ptroff_v, get_by_val, &(vector->offsets), index));
+}
+
+static
+const char *
 UVECTOR_PROC(string_v, get) (const string_v * vector, uint32_t index)
 {
 	if (index >= vector->offsets.used) return NULL;
 
-	return memfun_ptr_offset(vector->ptr, UVECTOR_CALL(ptroff_v, get_by_val, &(vector->offsets), index));
+	return UVECTOR_CALL_INT(string_v, get, vector, index);
 }
 
 static
@@ -103,7 +110,8 @@ UVECTOR_PROC(string_v, append) (string_v * vector, const char * string)
 
 static
 uint32_t
-UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * source, uint32_t begin, uint32_t count) {
+UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * source, uint32_t begin, uint32_t count)
+{
 	if (begin >= source->offsets.used) return 0;
 
 	uint32_t end = begin + count;
@@ -118,6 +126,21 @@ UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * sou
 	}
 
 	return count;
+}
+
+static
+const char * const *
+UVECTOR_PROC(string_v, to_ptrlist) (const string_v * vector)
+{
+	const char ** ptrlist;
+	ptrlist = memfun_alloc((vector->offsets.used + 1) * sizeof(char *));
+	if (!ptrlist) return NULL;
+
+	for (uint32_t i = 0; i < vector->offsets.used; i++) {
+		ptrlist[i] = UVECTOR_CALL_INT(string_v, get, vector, i);
+	}
+
+	return (const char * const *) ptrlist;
 }
 
 #endif /* HEADER_INCLUDED_UVECTOR_STR */
