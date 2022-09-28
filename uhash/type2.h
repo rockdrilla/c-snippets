@@ -61,7 +61,7 @@
 	void \
 	UHASH_PROC_INT(user_t, set_value) (user_t * hash, UHASH_NAME(user_t, node) * node, const value_t * value) { \
 		UHASH_IDX_T i; \
-        value_t * v ; \
+		value_t * v ; \
 		switch (node->value) { \
 		case 0: \
 			if (!value) break; \

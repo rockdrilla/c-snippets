@@ -27,11 +27,11 @@
 	static \
 	int roundby ## n (t value, t align) { \
 		if (align < 2) return value; \
-        t r, x; \
+		t r, x; \
 		r = (popcnt ## n (align) == 1) ? (value & (align - 1)) : (value % align); \
-        if (!r) return value; \
-        x = value - r; \
-        return (uadd ## n (x, align, &r)) ? r : x; \
+		if (!r) return value; \
+		x = value - r; \
+		return (uadd ## n (x, align, &r)) ? r : x; \
 	}
 _ROUNDBY_DEFINE_FUNC(,   unsigned int)
 _ROUNDBY_DEFINE_FUNC(l,  unsigned long)
