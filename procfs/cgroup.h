@@ -50,7 +50,7 @@ int procfs_cgroup_walk(pid_t pid, const procfs_cgroup_callback callback, void * 
 	procfs_cgroup_entry entry;
 
 	const int n_buf = PATH_MAX /* entry.path */
-					+ 1024 /* remaining fields */;
+	                + 1024 /* remaining fields */;
 	char buf[n_buf];
 
 	int result = 0;

@@ -60,10 +60,10 @@ int procfs_mountinfo_walk(pid_t pid, const procfs_mountinfo_callback callback, v
 	procfs_mountinfo_entry entry;
 
 	const int n_buf = PATH_MAX /* entry.root */
-					+ PATH_MAX /* entry.mount_point */
-					+ PATH_MAX /* entry.mount_options */
-					+ PATH_MAX /* entry.super_options */
-					+ PATH_MAX /* remaining fields */;
+	                + PATH_MAX /* entry.mount_point */
+	                + PATH_MAX /* entry.mount_options */
+	                + PATH_MAX /* entry.super_options */
+	                + PATH_MAX /* remaining fields */;
 	char buf[n_buf];
 
 	int result = 0;
