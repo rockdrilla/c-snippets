@@ -33,18 +33,17 @@ int _cgv2_mountinfo(const procfs_mountinfo_entry * entry, _cgv2_walk * state)
 static
 int _cgv2_cgroup(const procfs_cgroup_entry * entry, _cgv2_walk * state)
 {
-	if (entry->id != 0) return 0;
-	if (entry->controllers[0]) return 0;
+	if (entry->id != 0)
+		return 0;
+	if (entry->controllers[0])
+		return 0;
 
 	do {
-		if (strcmp(state->root, "/") == 0)
-			break;
-		if (strcmp(state->root, entry->path) == 0)
-			break;
+		if (strcmp(state->root, "/") == 0) break;
+		if (strcmp(state->root, entry->path) == 0) break;
 
 		// many thanks to Podman for wasting approx. 4 hours of my life
-		if (strncmp(state->root, "/../", 4) == 0)
-			break;
+		if (strncmp(state->root, "/../", 4) == 0) break;
 
 		return 0;
 	} while (0);
@@ -53,7 +52,8 @@ int _cgv2_cgroup(const procfs_cgroup_entry * entry, _cgv2_walk * state)
 	return 1;
 }
 
-static int get_cgroup_v2_path(pid_t pid, char * buf)
+static
+int get_cgroup_v2_path(pid_t pid, char * buf)
 {
 	_cgv2_walk state;
 

@@ -21,7 +21,7 @@
 typedef struct {
 	int id;
 	char * controllers,
-		 * path;
+	     * path;
 } procfs_cgroup_entry;
 
 typedef int (* procfs_cgroup_callback ) (const procfs_cgroup_entry * entry, void * state);
@@ -38,9 +38,8 @@ int procfs_cgroup_walk(pid_t pid, const procfs_cgroup_callback callback, void * 
 		char procfs_path[24];
 		snprintf(procfs_path, sizeof(procfs_path), "/proc/%d/cgroup", pid);
 		f = fopen(procfs_path, "r");
-	} else {
+	} else
 		f = fopen("/proc/self/cgroup", "r");
-	}
 
 	if (!f) return 0;
 

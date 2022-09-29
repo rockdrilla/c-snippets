@@ -47,9 +47,8 @@ int procfs_mountinfo_walk(pid_t pid, const procfs_mountinfo_callback callback, v
 		char procfs_path[32];
 		snprintf(procfs_path, sizeof(procfs_path), "/proc/%d/mountinfo", pid);
 		f = fopen(procfs_path, "r");
-	} else {
+	} else
 		f = fopen("/proc/self/mountinfo", "r");
-	}
 
 	if (!f) return 0;
 
@@ -90,11 +89,10 @@ int procfs_mountinfo_walk(pid_t pid, const procfs_mountinfo_callback callback, v
 		sep = find_token(entry.optional, ' ', "-");
 		if (sep == NULL) continue;
 
-		if (sep == entry.optional) {
+		if (sep == entry.optional)
 			entry.optional = NULL;
-		} else {
+		else
 			entry.optional[sep - entry.optional - 1] = 0;
-		}
 
 		sep += 2; // go to next token
 

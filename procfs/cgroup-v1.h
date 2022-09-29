@@ -41,10 +41,8 @@ int _cgv1_cgroup(const procfs_cgroup_entry * entry, _cgv1_walk * state)
 		return 0;
 
 	do {
-		if (strcmp(state->root, entry->path) == 0)
-			break;
-		if (strcmp(state->root, "/") == 0)
-			break;
+		if (strcmp(state->root, entry->path) == 0) break;
+		if (strcmp(state->root, "/") == 0) break;
 
 		return 0;
 	} while (0);
