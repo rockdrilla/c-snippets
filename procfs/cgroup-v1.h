@@ -10,6 +10,8 @@
 #ifndef HEADER_INCLUDED_PROCFS_CGROUP_V1
 #define HEADER_INCLUDED_PROCFS_CGROUP_V1 1
 
+#include "../misc/ext-c-begin.h"
+
 #include "mountinfo.h"
 #include "cgroup.h"
 
@@ -71,5 +73,7 @@ int get_cgroup_v1_path(pid_t pid, const char * controller, char * buf)
 
 	return 1;
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_PROCFS_CGROUP_V1 */

@@ -10,6 +10,8 @@
 #ifndef HEADER_INCLUDED_MEMFUN
 #define HEADER_INCLUDED_MEMFUN 1
 
+#include "ext-c-begin.h"
+
 #include <string.h>
 #include <unistd.h>
 
@@ -304,5 +306,7 @@ void memfun_free(void * ptr, size_t length)
 
 	(void) MEMFUN_FREE(ptr);
 }
+
+#include "ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_MEMFUN */

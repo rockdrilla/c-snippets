@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_DEGREE2
 #define HEADER_INCLUDED_NUM_DEGREE2 1
 
+#include "../misc/ext-c-begin.h"
+
 #include "setlower.h"
 #include "uadd.h"
 
@@ -43,5 +45,7 @@ _DEGREE2_CURR_FUNC(ll, unsigned long long)
 _DEGREE2_NEXT_FUNC(,   unsigned int)
 _DEGREE2_NEXT_FUNC(l,  unsigned long)
 _DEGREE2_NEXT_FUNC(ll, unsigned long long)
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_DEGREE2 */

@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_GETMSB
 #define HEADER_INCLUDED_NUM_GETMSB 1
 
+#include "../misc/ext-c-begin.h"
+
 #include "popcnt.h"
 #include "setlower.h"
 
@@ -25,5 +27,7 @@
 _GETMSB_DEFINE_FUNC(,   unsigned int)
 _GETMSB_DEFINE_FUNC(l,  unsigned long)
 _GETMSB_DEFINE_FUNC(ll, unsigned long long)
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_GETMSB */

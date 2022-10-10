@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_ROUNDBY
 #define HEADER_INCLUDED_NUM_ROUNDBY 1
 
+#include "../misc/ext-c-begin.h"
+
 #include "popcnt.h"
 #include "uadd.h"
 
@@ -36,5 +38,7 @@
 _ROUNDBY_DEFINE_FUNC(,   unsigned int)
 _ROUNDBY_DEFINE_FUNC(l,  unsigned long)
 _ROUNDBY_DEFINE_FUNC(ll, unsigned long long)
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_ROUNDBY */

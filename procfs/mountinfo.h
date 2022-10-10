@@ -10,6 +10,8 @@
 #ifndef HEADER_INCLUDED_PROCFS_MOUNTINFO
 #define HEADER_INCLUDED_PROCFS_MOUNTINFO 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -114,5 +116,7 @@ int procfs_mountinfo_walk(pid_t pid, const procfs_mountinfo_callback callback, v
 
 	return result;
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_PROCFS_MOUNTINFO */

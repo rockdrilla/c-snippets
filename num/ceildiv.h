@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_CEILDIV
 #define HEADER_INCLUDED_NUM_CEILDIV 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <stdlib.h>
 
 #include "../misc/cc-inline.h"
@@ -20,5 +22,7 @@
 _CEILDIV_DEFINE_FUNC(,   int)
 _CEILDIV_DEFINE_FUNC(l,  long)
 _CEILDIV_DEFINE_FUNC(ll, long long)
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_CEILDIV */

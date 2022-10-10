@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_UMUL
 #define HEADER_INCLUDED_NUM_UMUL 1
 
+#include "../misc/ext-c-begin.h"
+
 #ifdef __has_builtin
   #if __has_builtin(__builtin_umul_overflow)
     #ifndef _UMUL_HAVE_BUILTIN
@@ -59,5 +61,7 @@ _UMUL_DEFINE_FUNC(l, unsigned long)
 #else /* ! _UMUL_HAVE_BUILTIN_LL */
 _UMUL_DEFINE_FUNC(ll, unsigned long long)
 #endif /* _UMUL_HAVE_BUILTIN_LL */
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_UMUL */

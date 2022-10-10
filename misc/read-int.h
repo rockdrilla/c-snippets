@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_READ_INT
 #define HEADER_INCLUDED_READ_INT 1
 
+#include "ext-c-begin.h"
+
 #include <fcntl.h>
 #include <errno.h>
 #include <limits.h>
@@ -118,5 +120,7 @@ _READINT_DEFINE_FUNC(ulong, unsigned long, ULONG_MAX)
 
 _READINT_DEFINE_FUNC( llong,          long long,  LLONG_MIN)
 _READINT_DEFINE_FUNC(ullong, unsigned long long, ULLONG_MAX)
+
+#include "ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_READ_INT */

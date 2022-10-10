@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_IO_FGETS
 #define HEADER_INCLUDED_IO_FGETS 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -18,5 +20,7 @@ char * fgets_trim(char * s, int n, FILE * stream)
 	s[strcspn(s, "\r\n")] = 0;
 	return s;
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_IO_FGETS */

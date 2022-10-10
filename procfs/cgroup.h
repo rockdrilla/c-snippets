@@ -10,6 +10,8 @@
 #ifndef HEADER_INCLUDED_PROCFS_CGROUP
 #define HEADER_INCLUDED_PROCFS_CGROUP 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -73,5 +75,7 @@ int procfs_cgroup_walk(pid_t pid, const procfs_cgroup_callback callback, void * 
 
 	return result;
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_PROCFS_CGROUP */

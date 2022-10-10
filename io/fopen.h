@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_IO_FOPEN
 #define HEADER_INCLUDED_IO_FOPEN 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
@@ -45,5 +47,7 @@ FILE * fopen_path(const char * directory, const char * filepath, int flags, cons
 	errno = 0;
 	return fdopen(fd_file, fmode);
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_IO_FOPEN */

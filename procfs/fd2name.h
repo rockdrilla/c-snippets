@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_PROCFS_FD2NAME
 #define HEADER_INCLUDED_PROCFS_FD2NAME 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,5 +28,7 @@ static uint32_t procfs_fd2name(int fd, char * buffer, uint32_t buffer_size)
 
 	return result;
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_PROCFS_FD2NAME */

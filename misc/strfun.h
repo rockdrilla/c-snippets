@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_STRFUN
 #define HEADER_INCLUDED_STRFUN 1
 
+#include "ext-c-begin.h"
+
 #include <string.h>
 
 static
@@ -105,5 +107,7 @@ unsigned int get_token_count(const char * string, int delimiter)
 
 	return c;
 }
+
+#include "ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_STRFUN */

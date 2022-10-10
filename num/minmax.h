@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_MINMAX
 #define HEADER_INCLUDED_NUM_MINMAX 1
 
+#include "../misc/ext-c-begin.h"
+
 #ifndef min
 #define min(a,b) (((a) > (b)) ? (b) : (a))
 #endif
@@ -22,5 +24,7 @@ int min_positive(int a, int b)
 	if (b < 1) return max(a, 0);
 	return min(a, b);
 }
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_MINMAX */

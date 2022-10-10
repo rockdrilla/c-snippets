@@ -28,6 +28,8 @@
 #ifndef HEADER_INCLUDED_NUM_POPCNT
 #define HEADER_INCLUDED_NUM_POPCNT 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <limits.h>
 
 #include "../misc/cc-inline.h"
@@ -151,5 +153,7 @@ _POPCNT_DEFINE_FUNC(ll, unsigned long long)
 _POPCNT_DEFINE_BITHACKS(,   unsigned int)
 _POPCNT_DEFINE_BITHACKS(l,  unsigned long)
 _POPCNT_DEFINE_BITHACKS(ll, unsigned long long)
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_POPCNT */

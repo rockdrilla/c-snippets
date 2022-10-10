@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_SETLOWER
 #define HEADER_INCLUDED_NUM_SETLOWER 1
 
+#include "../misc/ext-c-begin.h"
+
 #include <limits.h>
 
 #include "../misc/dumb-recurse.h"
@@ -40,5 +42,7 @@
 _SETLOWER_DEFINE_FUNC(,   unsigned int)
 _SETLOWER_DEFINE_FUNC(l,  unsigned long)
 _SETLOWER_DEFINE_FUNC(ll, unsigned long long)
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_SETLOWER */

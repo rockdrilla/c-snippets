@@ -7,6 +7,8 @@
 #ifndef HEADER_INCLUDED_NUM_UADD
 #define HEADER_INCLUDED_NUM_UADD 1
 
+#include "../misc/ext-c-begin.h"
+
 #ifdef __has_builtin
   #if __has_builtin(__builtin_uadd_overflow)
     #ifndef _UADD_HAVE_BUILTIN
@@ -59,5 +61,7 @@ _UADD_DEFINE_FUNC(l, unsigned long)
 #else /* ! _UADD_HAVE_BUILTIN_LL */
 _UADD_DEFINE_FUNC(ll, unsigned long long)
 #endif /* _UADD_HAVE_BUILTIN_LL */
+
+#include "../misc/ext-c-end.h"
 
 #endif /* HEADER_INCLUDED_NUM_UADD */
