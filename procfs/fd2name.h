@@ -15,7 +15,8 @@
 #include <string.h>
 #include <unistd.h>
 
-static uint32_t procfs_fd2name(int fd, char * buffer, uint32_t buffer_size)
+static
+uint32_t procfs_fd2name(int fd, char * buffer, uint32_t buffer_size)
 {
 	/* "/proc/self/fd/" - 14, "%d" - up to 10 */
 	char procfs_link[32];
