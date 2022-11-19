@@ -14,25 +14,22 @@ template<typename T1, typename T2 = T1>
 static
 CC_FORCE_INLINE T1 min_positive_t(T1 a, T2 b);
 
-template<>
-CC_FORCE_INLINE int min_positive_t<int>(int a, int b)
-{
-	return min_positive(a, b);
-}
-
-#define _MIN_POSITIVE_T_DEFINE_FUNC(n, T) \
+#define _MIN_POSITIVE_T_DEFINE_COMPAT_FUNC(n, T1, T2) \
 	template<> \
-	CC_FORCE_INLINE T min_positive_t<T>(T a, int b) \
-	{ \
-		return min_positive ## n (a, b); \
-	} \
-	\
-	template<> \
-	CC_FORCE_INLINE T min_positive_t<T>(T a, T b) \
+	CC_FORCE_INLINE T1 min_positive_t<T1>(T1 a, T2 b) \
 	{ \
 		return min_positive ## n (a, b); \
 	}
+
+#define _MIN_POSITIVE_T_DEFINE_FUNC(n, T) \
+	_MIN_POSITIVE_T_DEFINE_COMPAT_FUNC(n, T, T)
+
+_MIN_POSITIVE_T_DEFINE_FUNC(,   int)
 _MIN_POSITIVE_T_DEFINE_FUNC(l,  long)
 _MIN_POSITIVE_T_DEFINE_FUNC(ll, long long)
+
+_MIN_POSITIVE_T_DEFINE_COMPAT_FUNC(l,  long, int)
+_MIN_POSITIVE_T_DEFINE_COMPAT_FUNC(ll, long long, int)
+_MIN_POSITIVE_T_DEFINE_COMPAT_FUNC(ll, long long, long)
 
 #endif /* HEADER_INCLUDED_NUM_MINMAX_HH */
