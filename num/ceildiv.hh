@@ -10,12 +10,12 @@
 #include "ceildiv.h"
 
 template<typename T1, typename T2 = T1>
-static
-CC_FORCE_INLINE T1 ceildiv_t(T1 a, T2 b);
+static CC_FORCE_INLINE \
+T1 ceildiv_t(T1 a, T2 b);
 
 #define _CEILDIV_T_DEFINE_COMPAT_FUNC(n, T1, T2) \
-	template<> \
-	CC_FORCE_INLINE T1 ceildiv_t<T1>(T1 a, T2 b) \
+	template<> CC_FORCE_INLINE \
+	T1 ceildiv_t<T1>(T1 a, T2 b) \
 	{ \
 		return ceildiv ## n (a, b); \
 	}

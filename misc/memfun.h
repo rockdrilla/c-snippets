@@ -77,8 +77,8 @@ size_t memfun_page_size(void)
 	return x = memfun_page_default;
 }
 #else
-static
-CC_FORCE_INLINE size_t memfun_page_size(void)
+static CC_FORCE_INLINE
+size_t memfun_page_size(void)
 {
 	return memfun_page_default;
 }
@@ -120,8 +120,8 @@ static const unsigned int memfun_growth_factor
 #define _MEMFUN_N2D_DUMB(x) \
 	( ((x)<<1) & ~((x)|((x)>>1)|((x)>>2)|((x)>>3)|((x)>>4)|((x)>>5)) )
 
-static
-CC_FORCE_INLINE size_t _memfun_n2d_dumb(size_t x)
+static CC_FORCE_INLINE
+size_t _memfun_n2d_dumb(size_t x)
 {
 	return (x<<1) & ~(x|(x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5));
 }
@@ -151,8 +151,8 @@ size_t memfun_align(size_t length)
 	return _memfun_n2d_dumb(length);
 }
 
-static
-CC_FORCE_INLINE size_t memfun_block_align(size_t length)
+static CC_FORCE_INLINE
+size_t memfun_block_align(size_t length)
 {
 	if (!length) return 0;
 
@@ -304,8 +304,8 @@ void * memfun_realloc_ex(void * ptr, size_t * length, size_t extend)
 	return _memfun_realloc(ptr, _old, _new);
 }
 
-static
-CC_FORCE_INLINE void * memfun_realloc(void * ptr, size_t length, size_t extend)
+static CC_FORCE_INLINE
+void * memfun_realloc(void * ptr, size_t length, size_t extend)
 {
 	size_t old = length;
 	return memfun_realloc_ex(ptr, &old, extend);

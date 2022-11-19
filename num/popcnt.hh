@@ -10,12 +10,12 @@
 #include "popcnt.h"
 
 template<typename T>
-static
-CC_FORCE_INLINE T popcnt_t(T a);
+static CC_FORCE_INLINE \
+T popcnt_t(T a);
 
 #define _POPCNT_T_DEFINE_FUNC(n, T) \
-	template<> \
-	CC_FORCE_INLINE T popcnt_t<T>(T a) \
+	template<> CC_FORCE_INLINE \
+	T popcnt_t<T>(T a) \
 	{ \
 		return popcnt ## n (a); \
 	}
