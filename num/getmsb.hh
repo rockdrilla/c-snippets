@@ -7,7 +7,6 @@
 #ifndef HEADER_INCLUDED_NUM_GETMSB_HH
 #define HEADER_INCLUDED_NUM_GETMSB_HH 1
 
-#include "../misc/cc-inline.h"
 #include "getmsb.h"
 
 template<typename T>

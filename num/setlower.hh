@@ -7,7 +7,6 @@
 #ifndef HEADER_INCLUDED_NUM_SETLOWER_HH
 #define HEADER_INCLUDED_NUM_SETLOWER_HH 1
 
-#include "../misc/cc-inline.h"
 #include "setlower.h"
 
 template<typename T>

@@ -7,7 +7,6 @@
 #ifndef HEADER_INCLUDED_NUM_MINMAX_HH
 #define HEADER_INCLUDED_NUM_MINMAX_HH 1
 
-#include "../misc/cc-inline.h"
 #include "minmax.h"
 
 template<typename T1, typename T2 = T1>

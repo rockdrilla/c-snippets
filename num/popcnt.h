@@ -73,7 +73,7 @@ _POPCNT_DECLARE_BITHACKS(ll, unsigned long long);
 
 static int _popcnt_builtin = _POPCNT_BUILTIN_NONE;
 
-static
+static CC_FORCE_INLINE
 int _popcnt_cpu_supports(void)
 {
 	/* ref:
@@ -102,7 +102,7 @@ int _popcnt_cpu_supports(void)
 #endif /* _POPCNT_USE_BUILTIN */
 
 #define _POPCNT_DEFINE_FUNC(n, t) \
-	static \
+	static CC_INLINE \
 	int popcnt ## n (t x) { \
 		_POPCNT_TRY_BUILTIN(__builtin_popcount ## n) \
 		return _POPCNT_BITHACKS(n) (x); \

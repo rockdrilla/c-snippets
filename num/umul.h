@@ -9,6 +9,8 @@
 
 #include "../misc/ext-c-begin.h"
 
+#include "../misc/cc-inline.h"
+
 #ifdef __has_builtin
   #if __has_builtin(__builtin_umul_overflow)
     #ifndef _UMUL_HAVE_BUILTIN
@@ -32,7 +34,7 @@
 // TODO: write fair enough fallback version
 
 #define _UMUL_DEFINE_FUNC(n, t) \
-	static \
+	static CC_INLINE \
 	int umul ## n (t a, t b, t * r) { \
 		t res = a * b; \
 		if (a > b) { \

@@ -11,6 +11,7 @@
 
 #include <limits.h>
 
+#include "../misc/cc-inline.h"
 #include "../misc/dumb-recurse.h"
 
 #define _SETLOWER_a(v)     ( (v) | ((v) - 1) | ((v) >> 1) )
@@ -29,7 +30,7 @@
 #define SET_LOWER_MACRO64(v)  ( (((v) & ULLONG_MAX) == 0) ? 0 : _SETLOWER64(v) )
 
 #define _SETLOWER_DEFINE_FUNC(n, t) \
-	static \
+	static CC_INLINE \
 	t set_lower ## n (t v) { \
 		if (v == 0) return 0; \
 		t a = v | (v - 1) | (v >> 1); \

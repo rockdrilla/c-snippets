@@ -7,7 +7,6 @@
 #ifndef HEADER_INCLUDED_NUM_UMUL_HH
 #define HEADER_INCLUDED_NUM_UMUL_HH 1
 
-#include "../misc/cc-inline.h"
 #include "umul.h"
 
 template<typename T1, typename T2 = T1>

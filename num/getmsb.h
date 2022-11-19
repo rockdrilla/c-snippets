@@ -9,6 +9,7 @@
 
 #include "../misc/ext-c-begin.h"
 
+#include "../misc/cc-inline.h"
 #include "popcnt.h"
 #include "setlower.h"
 
@@ -19,7 +20,7 @@
 #define GETMSB_MACRO64(v)  ( (((v) & ULLONG_MAX) == 0) ? 0 : _GETMSB64(v) )
 
 #define _GETMSB_DEFINE_FUNC(n, t) \
-	static \
+	static CC_INLINE \
 	int getmsb ## n (t v) { \
 		if (v == 0) return 0; \
 		return popcnt ## n (set_lower ## n (v)); \

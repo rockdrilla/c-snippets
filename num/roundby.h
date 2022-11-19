@@ -26,7 +26,7 @@
 	) )
 
 #define _ROUNDBY_DEFINE_FUNC(n, t) \
-	static \
+	static CC_INLINE \
 	int roundby ## n (t value, t align) { \
 		if (align < 2) return value; \
 		t r, x; \

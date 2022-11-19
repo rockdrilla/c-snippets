@@ -7,7 +7,6 @@
 #ifndef HEADER_INCLUDED_NUM_DEGREE2_HH
 #define HEADER_INCLUDED_NUM_DEGREE2_HH 1
 
-#include "../misc/cc-inline.h"
 #include "degree2.h"
 
 template<typename T>

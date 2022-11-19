@@ -7,7 +7,6 @@
 #ifndef HEADER_INCLUDED_NUM_UADD_HH
 #define HEADER_INCLUDED_NUM_UADD_HH 1
 
-#include "../misc/cc-inline.h"
 #include "uadd.h"
 
 template<typename T1, typename T2 = T1>
