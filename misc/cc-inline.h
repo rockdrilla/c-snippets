@@ -12,7 +12,7 @@
   #define CC_FORCE_INLINE  __attribute__((always_inline))
 #else /* CC_NO_INLINE */
   #define CC_INLINE
-  #define CC_FORCE_INLINE
+  #define CC_FORCE_INLINE  inline
 #endif /* CC_NO_INLINE */
 
 #endif /* HEADER_INCLUDED_CC_INLINE */
