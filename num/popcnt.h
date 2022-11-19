@@ -108,6 +108,7 @@ int _popcnt_cpu_supports(void)
 		_POPCNT_TRY_BUILTIN(__builtin_popcount ## n) \
 		return _POPCNT_BITHACKS(n) (x); \
 	}
+
 _POPCNT_DEFINE_FUNC(,   unsigned int)
 _POPCNT_DEFINE_FUNC(l,  unsigned long)
 _POPCNT_DEFINE_FUNC(ll, unsigned long long)
@@ -150,6 +151,7 @@ _POPCNT_DEFINE_FUNC(ll, unsigned long long)
 		x = (x * c3) >> c4; \
 		return x; \
 	}
+
 _POPCNT_DEFINE_BITHACKS(,   unsigned int)
 _POPCNT_DEFINE_BITHACKS(l,  unsigned long)
 _POPCNT_DEFINE_BITHACKS(ll, unsigned long long)

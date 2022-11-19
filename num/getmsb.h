@@ -24,6 +24,7 @@
 		if (v == 0) return 0; \
 		return popcnt ## n (set_lower ## n (v)); \
 	}
+
 _GETMSB_DEFINE_FUNC(,   unsigned int)
 _GETMSB_DEFINE_FUNC(l,  unsigned long)
 _GETMSB_DEFINE_FUNC(ll, unsigned long long)

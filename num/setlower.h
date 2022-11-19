@@ -39,6 +39,7 @@
 		} \
 		return a; \
 	}
+
 _SETLOWER_DEFINE_FUNC(,   unsigned int)
 _SETLOWER_DEFINE_FUNC(l,  unsigned long)
 _SETLOWER_DEFINE_FUNC(ll, unsigned long long)

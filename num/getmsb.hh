@@ -20,6 +20,7 @@ CC_FORCE_INLINE T getmsb_t(T a);
 	{ \
 		return getmsb ## n (a); \
 	}
+
 _GETMSB_T_DEFINE_FUNC(,   unsigned int)
 _GETMSB_T_DEFINE_FUNC(l,  unsigned long)
 _GETMSB_T_DEFINE_FUNC(ll, unsigned long long)

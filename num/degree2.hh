@@ -24,6 +24,7 @@ CC_FORCE_INLINE T degree2_next_t(T a);
 	{ \
 		return degree2_curr ## n (a); \
 	}
+
 _DEGREE2_T_CURR_FUNC(,   unsigned int)
 _DEGREE2_T_CURR_FUNC(l,  unsigned long)
 _DEGREE2_T_CURR_FUNC(ll, unsigned long long)
@@ -34,6 +35,7 @@ _DEGREE2_T_CURR_FUNC(ll, unsigned long long)
 	{ \
 		return degree2_next ## n (a); \
 	}
+
 _DEGREE2_T_NEXT_FUNC(,   unsigned int)
 _DEGREE2_T_NEXT_FUNC(l,  unsigned long)
 _DEGREE2_T_NEXT_FUNC(ll, unsigned long long)

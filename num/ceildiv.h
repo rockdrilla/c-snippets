@@ -19,6 +19,7 @@
 		n ## div_t qr = n ## div(a, b); \
 		return qr.quot + ((qr.rem) ? 1 : 0); \
 	}
+
 _CEILDIV_DEFINE_FUNC(,   int)
 _CEILDIV_DEFINE_FUNC(l,  long)
 _CEILDIV_DEFINE_FUNC(ll, long long)

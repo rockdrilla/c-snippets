@@ -35,6 +35,7 @@
 		x = value - r; \
 		return (uadd ## n (x, align, &r)) ? r : x; \
 	}
+
 _ROUNDBY_DEFINE_FUNC(,   unsigned int)
 _ROUNDBY_DEFINE_FUNC(l,  unsigned long)
 _ROUNDBY_DEFINE_FUNC(ll, unsigned long long)

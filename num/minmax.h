@@ -24,6 +24,7 @@
 		if (b < 1) return max(a, 0); \
 		return min(a, b); \
 	}
+
 _MIN_POSITIVE_DEFINE_FUNC(,   int)
 _MIN_POSITIVE_DEFINE_FUNC(l,  long)
 _MIN_POSITIVE_DEFINE_FUNC(ll, long long)

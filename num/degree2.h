@@ -25,6 +25,7 @@
 		t r, x = set_lower ## n (v >> 1); \
 		return (uadd ## n (x, 1, &r)) ? r : 0; \
 	}
+
 _DEGREE2_CURR_FUNC(,   unsigned int)
 _DEGREE2_CURR_FUNC(l,  unsigned long)
 _DEGREE2_CURR_FUNC(ll, unsigned long long)
@@ -42,6 +43,7 @@ _DEGREE2_CURR_FUNC(ll, unsigned long long)
 		t r, x = set_lower ## n (v); \
 		return (uadd ## n (x, 1, &r)) ? r : 0; \
 	}
+
 _DEGREE2_NEXT_FUNC(,   unsigned int)
 _DEGREE2_NEXT_FUNC(l,  unsigned long)
 _DEGREE2_NEXT_FUNC(ll, unsigned long long)

@@ -20,6 +20,7 @@ CC_FORCE_INLINE T set_lower_t(T a);
 	{ \
 		return set_lower ## n (a); \
 	}
+
 _SETLOWER_T_DEFINE_FUNC(,   unsigned int)
 _SETLOWER_T_DEFINE_FUNC(l,  unsigned long)
 _SETLOWER_T_DEFINE_FUNC(ll, unsigned long long)

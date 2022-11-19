@@ -19,6 +19,7 @@ CC_FORCE_INLINE T popcnt_t(T a);
 	{ \
 		return popcnt ## n (a); \
 	}
+
 _POPCNT_T_DEFINE_FUNC(,   unsigned int)
 _POPCNT_T_DEFINE_FUNC(l,  unsigned long)
 _POPCNT_T_DEFINE_FUNC(ll, unsigned long long)
