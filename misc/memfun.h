@@ -26,6 +26,7 @@
 #define _MEMFUN_BLOCK_DEFAULT          8192
 #define _MEMFUN_GROWTH_FACTOR_DEFAULT  10
 
+// #define MEMFUN_PAGE           _MEMFUN_PAGE_DEFAULT
 // #define MEMFUN_BLOCK          _MEMFUN_BLOCK_DEFAULT
 // #define MEMFUN_GROWTH_FACTOR  _MEMFUN_GROWTH_FACTOR_DEFAULT
 
@@ -53,20 +54,35 @@
 #define MEMFUN_FREE(ptr) free(ptr)
 #endif
 
+#ifdef MEMFUN_PAGE
+static const size_t memfun_page_default
+= ((MEMFUN_PAGE) < _MEMFUN_PAGE_DEFAULT)
+? _MEMFUN_PAGE_DEFAULT
+: ((POPCNT_MACRO64(MEMFUN_PAGE) == 1) ? (MEMFUN_PAGE) : DEGREE2_NEXT_MACRO64(MEMFUN_PAGE));
+#else /* ! MEMFUN_PAGE */
+static const size_t memfun_page_default
+= _MEMFUN_PAGE_DEFAULT;
+#endif /* MEMFUN_PAGE */
+
+#ifdef _SC_PAGESIZE
 static
 size_t memfun_page_size(void)
 {
 	static size_t x = 0;
 	if (x) return x;
 
-#ifdef _SC_PAGESIZE
 	long len = sysconf(_SC_PAGESIZE);
 	if (len > 0) return x = len;
-#endif
 
-	// good old standard
-	return x = _MEMFUN_PAGE_DEFAULT;
+	return x = memfun_page_default;
 }
+#else
+static
+CC_FORCE_INLINE size_t memfun_page_size(void)
+{
+	return memfun_page_default;
+}
+#endif
 
 #ifdef MEMFUN_BLOCK
 static const size_t memfun_block_default
