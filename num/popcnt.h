@@ -56,7 +56,7 @@ static int popcnt(unsigned int x);
 static int popcntl(unsigned long x);
 static int popcntll(unsigned long long x);
 
-#define _POPCNT_BITHACKS(n)             popcnt_bithacks ## n
+#define _POPCNT_BITHACKS(n) popcnt## n ##_bithacks
 #define _POPCNT_DECLARE_BITHACKS(n, t) \
 	static CC_FORCE_INLINE \
 	int _POPCNT_BITHACKS(n) (t x)
