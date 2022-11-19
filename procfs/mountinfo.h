@@ -71,22 +71,24 @@ int procfs_mountinfo_walk(pid_t pid, const procfs_mountinfo_callback callback, v
 
 	char * sep;
 	while (fgets_trim(buf, n_buf, f)) {
+		memset(&entry, 0, sizeof(entry));
+
 		if (split_string(buf, ' ', n_part, part) != n_part)
 			continue;
 
 		entry.id            = read_int_str(10, part[0]);
 		entry.parent_id     = read_int_str(10, part[1]);
 
-		if (split_string(part[2], ':', 2, part) != 2)
-			continue;
-
-		entry.major = read_int_str(10, part[0]);
-		entry.minor = read_int_str(10, part[1]);
-
 		entry.root          = part[3];
 		entry.mount_point   = part[4];
 		entry.mount_options = part[5];
 		entry.optional      = part[6];
+
+		if (split_string(part[2], ':', 3, part) != 2)
+			continue;
+
+		entry.major = read_int_str(10, part[0]);
+		entry.minor = read_int_str(10, part[1]);
 
 		sep = find_token(entry.optional, ' ', "-");
 		if (sep == NULL) continue;
