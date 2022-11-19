@@ -26,6 +26,7 @@ uint32_t procfs_fd2name(int fd, char * buffer, uint32_t buffer_size)
 	snprintf(procfs_link, sizeof(procfs_link), "/proc/self/fd/%d", fd);
 	ssize_t result = readlink(procfs_link, buffer, buffer_size - 1);
 	if (result <= 0) return 0;
+	buffer[result] = 0;
 
 	return result;
 }
