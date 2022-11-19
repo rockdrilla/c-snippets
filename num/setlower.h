@@ -35,7 +35,7 @@
 		if (v == 0) return 0; \
 		t a = v | (v - 1) | (v >> 1); \
 		t b = v << 1; \
-		for (unsigned long i = 0; i < ((sizeof(t) * CHAR_BIT) - 3); i++) { \
+		for (unsigned int i = 0; i < ((sizeof(t) * CHAR_BIT) - 3); i++) { \
 			a = (a | b) >> 1; \
 		} \
 		return a; \
