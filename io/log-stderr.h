@@ -24,6 +24,42 @@
 #include "const.h"
 
 static
+void vlog_stderr(const char * prefix, const char * suffix, const char * fmt, va_list args)
+__attribute__((format (printf, 3, 0)));
+
+static
+void vlog_stderr_error(const char * prefix, int error_num, const char * fmt, va_list args)
+__attribute__((format (printf, 3, 0)));
+
+static
+void vlog_stderr_path_error(const char * prefix, const char * path_name, int error_num, const char * fmt, va_list args)
+__attribute__((format (printf, 4, 0)));
+
+static
+void log_stderr(const char * fmt, ...)
+__attribute__((format (printf, 1, 2)));
+
+static
+void log_stderr_ex(const char * prefix, const char * suffix, const char * fmt, ...)
+__attribute__((format (printf, 3, 4)));
+
+static
+void log_stderr_error(int error_num, const char * fmt, ...)
+__attribute__((format (printf, 2, 3)));
+
+static
+void log_stderr_error_ex(const char * prefix, int error_num, const char * fmt, ...)
+__attribute__((format (printf, 3, 4)));
+
+static
+void log_stderr_path_error(const char * path_name, int error_num, const char * fmt, ...)
+__attribute__((format (printf, 3, 4)));
+
+static
+void log_stderr_path_error_ex(const char * prefix, const char * path_name, int error_num, const char * fmt, ...)
+__attribute__((format (printf, 4, 5)));
+
+static
 size_t _vlog_timestamp(const struct timespec * ts, char * buffer)
 {
 	struct tm _time_local;
