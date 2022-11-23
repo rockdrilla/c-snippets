@@ -141,7 +141,7 @@ static const int UVECTOR_NAME(ptr, bits) = sizeof(size_t) * CHAR_BIT;
 	int \
 	UVECTOR_PROC_INT(user_t, grow_by_bytes) (user_t * vector, size_t bytes) { \
 		size_t _new = UVECTOR_CALL(user_t, offset_of, vector->allocated); \
-		void * nptr = memfun_realloc_ex(vector->ptr, &_new, bytes); \
+		UVECTOR_NAME(user_t, alval) * nptr = (UVECTOR_NAME(user_t, alval) *) memfun_realloc_ex(vector->ptr, &_new, bytes); \
 		if ((!nptr) || (!_new)) return 0; \
 		size_t _alloc = _new / UVECTOR_NAME(user_t, align_size); \
 		vector->allocated = (_alloc < UVECTOR_NAME(user_t, idx_max)) ? _alloc : UVECTOR_NAME(user_t, idx_max); \

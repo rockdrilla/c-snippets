@@ -42,6 +42,10 @@
 #define MEMFUN_FREE_SECURE 1
 #endif
 
+#if !(defined(MEMFUN_MALLOC) || defined(MEMFUN_REALLOC) || defined(MEMFUN_FREE))
+#include <stdlib.h>
+#endif
+
 #ifndef MEMFUN_MALLOC
 #define MEMFUN_MALLOC(size) malloc(size)
 #endif

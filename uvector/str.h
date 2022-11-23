@@ -11,7 +11,7 @@
 
 #include "type0.h"
 
-UVECTOR_DEFINE_TYPE0(ptroff_v, uint32_t, size_t)
+UVECTOR_DEFINE_TYPE0(ptroff_v, unsigned int, size_t)
 
 typedef struct {
 	char     * ptr;
@@ -41,7 +41,7 @@ int
 UVECTOR_PROC(string_v, dup) (string_v * destination, const string_v * source)
 {
 	UVECTOR_CALL(string_v, init, destination);
-	destination->ptr = memfun_alloc(source->used);
+	destination->ptr = (char *) memfun_alloc(source->used);
 	if (!destination->ptr) return 0;
 
 	if (!UVECTOR_CALL(ptroff_v, dup, &(destination->offsets), &(source->offsets))) {
@@ -57,7 +57,7 @@ UVECTOR_PROC(string_v, dup) (string_v * destination, const string_v * source)
 }
 
 static CC_FORCE_INLINE
-uint32_t
+unsigned int
 UVECTOR_PROC(string_v, count) (const string_v * vector)
 {
 	return vector->offsets.used;
@@ -65,14 +65,14 @@ UVECTOR_PROC(string_v, count) (const string_v * vector)
 
 static
 const char *
-UVECTOR_PROC_INT(string_v, get) (const string_v * vector, uint32_t index)
+UVECTOR_PROC_INT(string_v, get) (const string_v * vector, unsigned int index)
 {
-	return memfun_ptr_offset(vector->ptr, UVECTOR_CALL(ptroff_v, get_by_val, &(vector->offsets), index));
+	return (const char *) memfun_ptr_offset(vector->ptr, UVECTOR_CALL(ptroff_v, get_by_val, &(vector->offsets), index));
 }
 
 static
 const char *
-UVECTOR_PROC(string_v, get) (const string_v * vector, uint32_t index)
+UVECTOR_PROC(string_v, get) (const string_v * vector, unsigned int index)
 {
 	if (index >= vector->offsets.used) return NULL;
 
@@ -80,8 +80,8 @@ UVECTOR_PROC(string_v, get) (const string_v * vector, uint32_t index)
 }
 
 static
-uint32_t
-UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * string, uint32_t length)
+unsigned int
+UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * string, unsigned int length)
 {
 	size_t new_used = roundbyl(vector->used + length + 1, sizeof(size_t));
 	if (new_used > vector->allocated) {
@@ -91,7 +91,7 @@ UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * string, ui
 		vector->ptr = (char *) nptr;
 	}
 
-	uint32_t idx = UVECTOR_CALL(ptroff_v, append_by_val, &(vector->offsets), vector->used);
+	unsigned int idx = UVECTOR_CALL(ptroff_v, append_by_val, &(vector->offsets), vector->used);
 	if (UVECTOR_CALL(ptroff_v, is_inv, idx))
 		return idx;
 
@@ -102,26 +102,26 @@ UVECTOR_PROC(string_v, append_fixed) (string_v * vector, const char * string, ui
 }
 
 static CC_FORCE_INLINE
-uint32_t
+unsigned int
 UVECTOR_PROC(string_v, append) (string_v * vector, const char * string)
 {
 	return UVECTOR_CALL(string_v, append_fixed, vector, string, (string) ? strlen(string) : 0);
 }
 
 static
-uint32_t
-UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * source, uint32_t begin, uint32_t count)
+unsigned int
+UVECTOR_PROC(string_v, copy_range) (string_v * destination, const string_v * source, unsigned int begin, unsigned int count)
 {
 	if (begin >= source->offsets.used) return 0;
 
-	uint32_t end = begin + count;
+	unsigned int end = begin + count;
 	if (end > source->offsets.used) {
 		count = source->offsets.used - begin;
 		end = source->offsets.used;
 	}
 
 	UVECTOR_CALL(string_v, init, destination);
-	for (uint32_t i = begin; i < end; i++) {
+	for (unsigned int i = begin; i < end; i++) {
 		UVECTOR_CALL(string_v, append, destination, UVECTOR_CALL(string_v, get, source, i));
 	}
 
@@ -133,10 +133,10 @@ const char * const *
 UVECTOR_PROC(string_v, to_ptrlist) (const string_v * vector)
 {
 	const char ** ptrlist;
-	ptrlist = memfun_alloc((vector->offsets.used + 1) * sizeof(char *));
+	ptrlist = (const char **) memfun_alloc((vector->offsets.used + 1) * sizeof(char *));
 	if (!ptrlist) return NULL;
 
-	for (uint32_t i = 0; i < vector->offsets.used; i++) {
+	for (unsigned int i = 0; i < vector->offsets.used; i++) {
 		ptrlist[i] = UVECTOR_CALL_INT(string_v, get, vector, i);
 	}
 

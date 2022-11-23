@@ -75,7 +75,7 @@ size_t _vlog_timestamp(const struct timespec * ts, char * buffer)
 
 	if (buffer)
 		strncpy(buffer, b, x);
-	
+
 	return x;
 }
 
@@ -133,7 +133,7 @@ void vlog_stderr(const char * prefix, const char * suffix, const char * fmt, va_
 
 	b[x++] = '\n';
 
-	write(STDERR_FILENO, b, x);
+	(void) write(STDERR_FILENO, b, x);
 }
 
 static
