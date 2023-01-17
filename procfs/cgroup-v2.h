@@ -4,7 +4,7 @@
  * - [1] https://www.kernel.org/doc/Documentation/filesystems/proc.txt
  *
  * SPDX-License-Identifier: Apache-2.0
- * (c) 2022, Konstantin Demin
+ * (c) 2022-2023, Konstantin Demin
  */
 
 #ifndef HEADER_INCLUDED_PROCFS_CGROUP_V2

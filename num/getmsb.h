@@ -1,7 +1,7 @@
 /* getmsb: number of most significant bit set
  *
  * SPDX-License-Identifier: Apache-2.0
- * (c) 2022, Konstantin Demin
+ * (c) 2022-2023, Konstantin Demin
  */
 
 #ifndef HEADER_INCLUDED_NUM_GETMSB
