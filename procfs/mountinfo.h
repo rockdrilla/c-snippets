@@ -55,7 +55,7 @@ int procfs_mountinfo_walk(pid_t pid, const procfs_mountinfo_callback callback, v
 	if (!f) return 0;
 
 	/* split up to entry.optional */
-	const int n_part = 7;
+	const unsigned int n_part = 7;
 	char * part[n_part];
 
 	procfs_mountinfo_entry entry;

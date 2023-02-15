@@ -61,7 +61,7 @@ public:
 			return;
 		}
 
-		_offsets = dynmem(source._offsets);
+		_offsets = dynmem<size_t, index_t>(source._offsets);
 		if (!_offsets.allocated()) {
 			memfun_t_free(_ptr, 0);
 			flush_self();

@@ -45,7 +45,7 @@ int procfs_cgroup_walk(pid_t pid, const procfs_cgroup_callback callback, void * 
 
 	if (!f) return 0;
 
-	const int n_part = 3;
+	const unsigned int n_part = 3;
 	char * part[n_part];
 
 	procfs_cgroup_entry entry;
